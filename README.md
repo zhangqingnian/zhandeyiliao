@@ -1,6 +1,6 @@
 # zhan_de_yi_liao
 
-> A Vue.js project
+> 湛德医疗 微信公众号 A Vue.js project
 
 ## Build Setup
 
