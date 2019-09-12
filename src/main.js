@@ -6,11 +6,12 @@ import router from './router'
 import axios from 'axios'
 import 'lib-flexible/flexible'
 import '@/assets/css/reset.css';
-Vue.config.productionTip = false
+import http from './http'
 
-//axios 配置
-axios.defaults.baseURL = 'ddddd';
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+import store from "@/store/index";
+Vue.config.productionTip = false
+Vue.prototype.$http = http;
 
 
 
@@ -18,6 +19,8 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
+

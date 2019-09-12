@@ -183,5 +183,56 @@ export default new Router({
       }
     },
 
+    /* 咨询 */ 
+    {
+      path: '/myConsult',
+      name: 'myConsult',
+      component: () => import('@/components/consult/MyConsult'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/consult',
+      name: 'consult',
+      component: () => import('@/components/consult/consult'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/consultDetail',
+      name: 'consultDetail',
+      component: () => import('@/components/consult/ConsultDetail'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    /* 培训 */
+    {
+      path: '/trainCourse',
+      name: 'trainCourse',
+      component: () => import('@/components/train/TrainCourse'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/trainDetail',
+      name: 'trainDetail',
+      component: () => import('@/components/train/TrainDetail'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/trainSignup',
+      name: 'trainSignup',
+      component: () => import('@/components/train/TrainSignup'),
+      meta: {
+        requiresAuth: true
+      }
+    },
+    
   ]
 })

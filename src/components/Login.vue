@@ -12,14 +12,17 @@
           <input type="text" placeholder="请输入密码" />
           <img class="mobile" src="../assets/img/password.png">
       </div>
-
-      <div class="loginBtn">登录</div>
+      <div class="revisePasswordWarp">
+          <router-link class="revisePassword" :to="{name:'revisePassword'}">修改密码</router-link>
+      </div>
+      
+      <div class="loginBtn" @click="getlist">登录</div>
     </div>
   </div>
 </template>
 
 <script>
-
+import Cookies from 'js-cookie'
 import Title from "@/components/common/MyTitle";
 export default {
   components:{
@@ -31,6 +34,31 @@ export default {
       title:'设备报修系统',
     }
   },
+  created(){
+      this.$http.post('/wx/wxLogin',{ 
+        loginName: 'jia',
+        passWord: 123456
+      },{
+          withCredentials:true
+      }).then(res => {
+        let {code, session} = res.data;
+        if(code == '0'){
+            Cookies.set('JSESSIONID', session);
+            
+            
+        }
+      })
+  },
+  methods:{
+    getlist(){
+      this.$http.post('/wx/engineer/api/waitingList',{
+        page:1,
+        limit:10
+      }).then(res => {
+          console.log(res)
+      })
+    }
+  }
   
 }
 </script>
@@ -85,5 +113,17 @@ export default {
   text-align: center;
   line-height: 90px;
   margin-top: 200px;
+}
+
+.revisePasswordWarp{
+  width: 700px;
+  text-align: right;
+  margin-top: 20px;
+}
+.revisePassword{
+  
+  color: #E60213;
+  font-size: 24px;
+  
 }
 </style>

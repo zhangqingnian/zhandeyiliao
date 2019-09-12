@@ -71,7 +71,7 @@
                     <input type="text" placeholder="请输入手机号码">
                 </div>
                 <div class="item-group flex-row">
-                    <div class="name">交付日期:</div>
+                    <div class="name">期望上门日期:</div>
                     <select>
                         <option value ="volvo">Volvo</option>
                         <option value ="saab">Saab</option>

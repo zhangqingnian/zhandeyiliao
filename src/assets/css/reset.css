@@ -105,6 +105,19 @@ body {
   background: #f5f5f5;
 }
 
+.loginBtn {
+  width: 670px;
+  height: 90px;
+  background: rgba(26, 173, 25, 1);
+  border-radius: 10px;
+  border: 2px solid rgba(5, 5, 5, 0.08);
+  font-size: 36px;
+  color: #fff;
+  text-align: center;
+  line-height: 90px;
+  margin-top: 200px;
+}
+
 .van-step--finish .van-step__circle,
 .van-step--finish .van-step__line {
   background-color: #57AAF0;

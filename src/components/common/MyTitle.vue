@@ -4,8 +4,7 @@
         <div class="logowarp">
             <span>{{title}}</span>
         </div>
-        
-        <img v-if="right" @click="rigthFn"  class="right" src='../../assets/img/apply_off.png' />
+        <slot name='right' ></slot>
     </div> 
 </template>
 
@@ -22,19 +21,18 @@ export default {
       type:Boolean,
       default:true
     },
-    right:{
-      type:Boolean,
-      default:false
-    },
-    rigthFn:{
-      type:Function
+    
+  },
+  data(){
+    return {
     }
+  },
+  mounted(){
   },
   methods:{
     goBack(){
       this.$router.go(-1);
-    },
-    
+    }
   }
 }
 </script>

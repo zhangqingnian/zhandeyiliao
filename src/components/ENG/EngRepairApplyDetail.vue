@@ -71,10 +71,10 @@
         </div>
         
         <div class="submit" >维修回执</div>
-        <div>          
+        <!-- <div>          
             <div class="submit" >接单</div>
             <div class="submit refuse" @click="showPopup">拒绝</div>
-        </div>
+        </div> -->
 
         <van-popup v-model="show" position="bottom" 
             :style="{ height: '65%' }">

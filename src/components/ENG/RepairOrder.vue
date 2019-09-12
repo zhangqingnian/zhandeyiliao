@@ -1,6 +1,8 @@
 <template>
   <div class="wrapper">
-    <Title :title="title" :back="false" :right="true" :rigthFn="rigthFn"/>
+    <my-title :title="title" :back="false" @right="onRight">
+        <title-icon slot="right" class="right" name='apply_off'/>
+    </my-title>
     <div class="content">
       <div class="nav flex-row">
         <div class="item" v-for="item in nav" :key="item.id" @click="onNav(item)">
@@ -40,11 +42,13 @@
 </template>
 
 <script>
-import Title from "@/components/common/MyTitle";
+import myTitle from "@/components/common/MyTitle";
+import titleIcon from "@/components/common/TitleIcon";
+import { Toast } from 'vant';
 export default {
   name: "repairOrder",
   components: {
-    Title
+    myTitle,titleIcon
   },
   props: {},
   data() {
@@ -58,8 +62,8 @@ export default {
     };
   },
   methods: {
-    rigthFn() {
-      console.log(123);
+    onRight() {
+      Toast(1111)
     },
     onNav(item) {
       this.nav.forEach(e => {
