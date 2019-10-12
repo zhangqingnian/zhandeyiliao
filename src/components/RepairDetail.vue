@@ -69,7 +69,7 @@
         <div class="submit">接受维修</div>
         <div class="submit refuse">拒绝维修</div>
       </div> -->
-      <div class="submit" v-if="info.status != '3' "  @click="onCheck">设备验收通过</div>
+      <div class="submit" v-if="info.status != '3' && info.orderReceivingStatus != 2"  @click="onCheck">设备验收通过</div>
     </div>
   </div>
 </template>
@@ -107,6 +107,8 @@ export default {
         if(this.info.orderReceivingStatus == 1){
           //待验收
           return require('@/assets/img/state2.png')
+        }else{
+          return require('@/assets/img/state0.png')
         }
       }
     },

@@ -60,21 +60,17 @@ instance.interceptors.response.use(response => {
   if (err.response) {
     const status = err.response.status
     const msg = err.response.data.msg
-    console.log(status)
+    Toast(msg)
     switch (status) {
-      case 302:
-        Toast('302')
-        // localStorage.removeItem('code');
-        // Cookies.remove('JSESSIONID');
-        // router.replace({
-        //   path: '/login',
-        //   query: {
-        //     redirect: router.currentRoute.fullPath
-        //   }
-        // })
-        break
       case 401:
-        Toast(msg)
+        localStorage.removeItem('code');
+        Cookies.remove('JSESSIONID');
+        router.replace({
+          path: '/login',
+          query: {
+            redirect: router.currentRoute.fullPath
+          }
+        })
         break
       case 403:
         localStorage.removeItem('code');
@@ -100,7 +96,6 @@ instance.interceptors.response.use(response => {
         //   }
         // })
         break
-      
       default:
         Toast('发生出错，请重试111')
     }

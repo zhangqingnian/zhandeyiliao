@@ -180,8 +180,8 @@ export default {
       })
     },
     onSuccess(){
-      //上门维修 && 成功
-      if( this.workOrder.maintenanceType == 1 && this.workOrder.orderReceivingStatus == 1 ){
+      //上门维修 && 成功或失败
+      if( this.workOrder.maintenanceType == 1 && this.workOrder.orderReceivingStatus != 0 ){
         this.$router.push({
           path:'/repairDetail',
           query:{
