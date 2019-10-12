@@ -1,12 +1,22 @@
 <template>
-  <div id="app">
-    <router-view/>
+<!-- v-wechat-title="$route.meta.title" -->
+  <div id="app" >
+    <router-view />
+    <lg-preview />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  watch:{
+    $route:{
+      handler:function (to, from) {
+        window.document.title = to.meta.title
+      },
+      immediate:true
+    }
+  }
 }
 </script>
 
@@ -15,7 +25,7 @@ export default {
   font-family: 'PingFangSC-Regular', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-top: 88px;
+  background: #f5f5f5;
 }
 
 </style>

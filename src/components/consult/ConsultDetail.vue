@@ -1,53 +1,60 @@
 <template>
   <div class="wrapper">
-      <my-title title="咨询详情" :right="true"></my-title>
+      <!-- <my-title title="咨询详情" :right="true"></my-title> -->
       <div class="content flex-column">
-        <div class="item">
+        <!-- <div class="item">
             <div class="title">问题概要：</div>
             <div class="warp">
               <input class="input" disabled type="text" value="华山医院公开课如何报名？">
             </div>        
-        </div>
+        </div> -->
         <div class="item">
             <div class="title">问题描述：</div>
             <div class="warp">
-              <textarea class="textarea" placeholder="填写问题描述"></textarea>
+              <textarea class="textarea" :value="item.content" readonly></textarea>
             </div>        
         </div>
-        <div class="item">
+        <div class="item" v-if="item.status == 1">
             <div class="title">客服回答：</div>
             <div class="warp">
-              <div class="textarea">
-                  申请书最核心的是表述愿望、提出请求（不要太长，说清楚自己请求就好，太长反而适得其反）申请书的写作格式一般来讲都是固定的，它的内容主要包括五个部分：标题、称呼、正文、结尾、落款。 (一)标题申请书一般由申请内容和文种名共同构成。题目要在申请书第一行的正中书写，而且字体要稍大。
+              <div class="textarea" v-html="replyContent">
+                  <!-- {{item.replyContent}} -->
               </div>
             </div>        
         </div>
-        <div class="item">
+        <!-- <div class="item">
             <div class="title">我要留言：</div>
             <div class="warp">
               <textarea class="textarea" placeholder="请尽量清晰描述您要咨询的问题，客服人员将尽快回复您！"></textarea>
             </div>        
         </div>
-        <div class="loginBtn">提交</div>
+        <div class="loginBtn">提交</div> -->
     </div>
   </div>
 </template>
 
 <script>
 import myTitle from "@/components/common/MyTitle";
+import { baseURL } from "@/baseUrl";
 export default {
   components:{
       myTitle
   },
-  props:{},
+  mounted(){
+
+  },
   data(){
     return {
+      item:this.$route.query.item
     }
   },
-  computed:{},
-  methods:{},
-  created(){},
-  mounted(){}
+  computed:{
+    replyContent(){
+      return  this.item.replyContent.replace('..',baseURL)
+ 
+    }
+  }
+  
 }
 </script>
 <style lang='scss' scoped>

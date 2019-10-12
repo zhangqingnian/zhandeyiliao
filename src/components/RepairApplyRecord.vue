@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
-      <Title :title="title"/>
+      <!-- <Title :title="title"/> -->
       <div class="content flex-column" >
-          <div class="bottom flex-row" >
+          <!-- <div class="bottom flex-row" >
             <div class="b-left flex-column">
               <div class="device-name">血液细胞分析仪</div>
               <div class="fs-26-color-999">SH3280-210032</div>
@@ -14,41 +14,121 @@
               </div>
               <img src="../assets/img/arrow.png" class="b-right-right">
             </div>
-          </div>
-          <div class="bottom flex-row" >
-            <div class="b-left flex-column">
-              <div class="device-name">血液细胞分析仪</div>
-              <div class="fs-26-color-999">SH3280-210032</div>
-            </div>
-            <div class="b-right flex-row">
-              <div class="b-right-left flex-column">
-                <div class="device-name end">已完成</div>
-                <div class="fs-26-color-999">2019-07-12</div>
+          </div> -->
+          
+          <van-list
+            class="list"
+            v-model="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="getRecord"
+           >
+            <div class="bottom flex-row" v-for="item in list" :key="item.id" @click="onDetail(item)">
+              <div class="b-left flex-column">
+                <div class="device-name">{{item.equipmentName}}</div>
+                <div class="fs-26-color-999">{{item.commodityNumber}}</div>
               </div>
-              <img src="../assets/img/arrow.png" class="b-right-right">
+              <div class="b-right flex-row">
+                <div class="b-right-left flex-column">
+                  <div class="device-name end" v-if="item.status == '3' ">维修已完成</div>
+                  <div class="device-name end" v-else-if="item.maintenanceType == 1">{{ item.orderReceivingStatus | orderReceivingStatusFilter }}</div>
+                  <div class="device-name end" v-else-if="item.maintenanceType == 2 && item.quoteAccept == 1">待验收</div>
+                  <div class="device-name end" v-else-if="item.maintenanceType == 2 && item.quoteAccept == 2">拒绝维修</div>
+                  <div class="device-name end" v-else>维修中</div>
+                  <div class="fs-26-color-999">{{item.startTime | dateFormat}}</div>
+                </div>
+                <img src="../assets/img/arrow.png" class="b-right-right">
+              </div>
             </div>
-          </div>
+            
+          </van-list>
       </div>
   </div>
 </template>
 
 <script>
+import Vue from "vue";
 import Title from "@/components/common/MyTitle";
+import { List } from "vant";
+Vue.use(List)
 export default {
   name:'repairApplyRecord',
   components:{
       Title
   },
-  props:{},
   data(){
     return {
         title: "维修申请记录",
+        list: [],
+        loading: false,
+        finished: false,
+        num:1
     }
   },
-  computed:{},
-  methods:{},
-  created(){},
-  mounted(){}
+  filters:{
+    orderReceivingStatusFilter(num){
+      switch (num) {
+        case 0:
+          return '维修中';
+        case 1:
+          return '维修成功(待验收)';
+        case 2:
+          return '维修失败(待处理)';
+        case 3:
+          return '维修退回';
+      }
+    },
+    statusFilter(num){
+      switch (num) {
+        case '1':
+          return '草稿';
+        case '2':
+          return '审批中';
+        case '3':
+          return '结束';    
+      }
+    },
+    actResultFilter(num){
+      switch (num) {
+        case '0':
+          return '维修失败';
+        case '1':
+          return '维修成功';
+        case '2':
+          return '维修中';    
+      }
+    }  
+  },
+  methods:{
+    onDetail(item){
+      this.$router.push({
+          path:'/ReportRepairDetail',
+          query:{
+              workOrder:JSON.stringify(item)
+          }
+      })
+    },
+    getRecord(){
+      this.$http.post('wx/hospital/api/listWorkOrder',{
+          page:this.num,
+          limit:15,
+          sidx:'',
+          order:''
+      }).then(res => {
+        let {code, msg, page} = res.data;
+        if(code == '0'){
+            this.num++;
+            let {totalPage, currPage, list} = page;
+            this.list = this.list.concat(list);
+            this.loading = false;
+            if (currPage >= totalPage) {
+              this.finished = true;
+            }
+        }
+      })
+    }
+  },
+  
 }
 </script>
 <style lang="scss" scoped>

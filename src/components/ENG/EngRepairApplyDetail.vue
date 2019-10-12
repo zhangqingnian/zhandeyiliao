@@ -1,14 +1,14 @@
 <template>
   <div class="wrapper">
-      <Title :title="title"/>
+      <!-- <Title :title="title"/> -->
       <div class="content flex-column">
         <div class="device-info">
             <div class="samll-title fs-26-color-999">设备信息</div>
             <div class="device-info-content flex-row">
                 <div class="left flex-column">
-                    <div class="device-name">眼底照相造影机（成人用）</div>
-                    <div class="device-type fs-26-color-999">设备型号：JN103450-2S</div>
-                    <div class="device-number fs-26-color-999">设备编号：HUUHSBWGXY-7667</div>
+                    <div class="device-name">{{info.equipmentName}}</div>
+                    <div class="device-type fs-26-color-999">设备型号：{{info.brandModel}}</div>
+                    <div class="device-number fs-26-color-999">设备编号：{{info.commodityNumber}}</div>
                 </div>
             </div>
         </div>
@@ -18,29 +18,22 @@
             <div class="fault-info-content flex-column">
                 <div class="item-group flex-row">
                     <div class="name">故障类型:</div>
-                    <div class="val">软件故障</div>
+                    <div class="val">{{info.faultTypeStr}}</div>
                 </div>
                 <div class="item-group flex-row">
                     <div class="name">维修类型:</div>
-                    <div class="val">上门维修</div>
+                    <div class="val">{{info.maintenanceTypeStr}}</div>
                 </div>
                 <div class="item-group flex-row">
                     <div class="name">故障描述:</div>
-                    <div class="val w450">设备进水，电子屏幕无法成像，外壳完好无损</div>
-                </div>
-                <div class="item-group flex-row">
-                    <div class="name">保修期情况:</div>
-                    <div class="val">在保修期内</div>
+                    <div class="val w450">{{info.faultDescStr}}</div>
                 </div>
                 
                 <div class="item-group">
                     <div class="name">故障图片:</div>
                     <div class="flex-row imgwarp">
-                        <img class="img" src="../../assets/img/test.png"/>
-                        <img class="img" />
-                        <img class="img" />
-                        <img class="img" />
-                        <img class="img" />
+                        <!-- <img class="img" src="../../assets/img/test.png"/> -->
+                        <img class="img" v-for="imgName in faultImg" :key="imgName" :src="imgUrl+imgName" />
                     </div>
                     
                 </div>
@@ -52,95 +45,129 @@
             <div class="fault-info-content flex-column">
                 <div class="item-group flex-row">
                     <div class="name">联系方式:</div>
-                    <div class="val fs34">18888888888</div>
+                    <div class="val fs34">{{info.linkMobile}}</div>
                 </div>
                 <div class="item-group flex-row">
                     <div class="name">交付日期:</div>
-                    <div class="fs34">2019-08-10</div>
+                    <div class="fs34">{{info.dateOfDelivery | dateFormat}}</div>
                 </div>
             </div>
         </div>
 
-        <div class="deliver-info">
+        <div class="deliver-info" v-if="descList.length"> 
             <div class="samll-title fs-26-color-999">补充说明</div>
             <div class="fault-info-content flex-column">
-                <div class="item-group flex-row">
-                    屏幕未有破损迹象
-                </div>
+                <div class="desc" v-for="(item,index) in descList" :key="item.id">{{index+1+'.' +' '+ item.orderDesc}}</div>
             </div>
         </div>
-        
-        <div class="submit" >维修回执</div>
-        <!-- <div>          
-            <div class="submit" >接单</div>
-            <div class="submit refuse" @click="showPopup">拒绝</div>
-        </div> -->
 
-        <van-popup v-model="show" position="bottom" 
-            :style="{ height: '65%' }">
-            <div class="popup-title-warp">
-                <div class="popup-title">拒绝原因</div>
-                <img class="close" @click="clsoePopup" src="../../assets/img/close.png" >
+        <div class="deliver-info" v-if="recordList.length"> 
+            <div class="samll-title fs-26-color-999">维修记录</div>
+            <div class="fault-info-content flex-column">
+                <div class="desc" v-for="(item,index) in recordList" :key="item.id">{{index+1+'.' +' '+ item.maintenanceRecord}}</div>
             </div>
-            <div class="popup-content-warp">
-                <textarea v-model="popupContent" class="popup-content" placeholder="说明拒绝原因"></textarea>
-            </div>
-            <div>
-                <div class="submit" @click="addRemark">确认</div>
-                <div class="submit refuse" >取消</div>
-            </div>
-            
-        </van-popup>
+        </div>
+        <!--orderReceivingStatus '工程师维修结果 0：待处理，1：维修成功，2：维修失败，3：维修退回', -->
+        <div class="submit" v-if="info.orderReceivingStatus == 0" @click="onback">维修回执</div>
+
       </div>
   </div>
 </template>
 
 <script >
 import Vue from 'vue';
-import Title from "@/components/common/MyTitle";
-import { Toast, Popup } from 'vant';
+import { baseURL } from "@/baseUrl";
+//import Title from "@/components/common/MyTitle";
+import { Toast } from 'vant';
 Vue.use(Toast);
-Vue.use(Popup);
 
 export default {
-  name:'engRepairApplyDetail',
-  components:{
-      Title
-  },
-  props:{},
   data(){
     return {
+        imgUrl:baseURL+'file/display/',
         title:'维修申请详情',
         show: false,
-        popupContent:''
+        popupContent:'',
+        info:{},
+        faultImg:[],
+        descList:[],
+        recordList:[]
     }
   },
+  mounted(){
+      let busId = this.$route.query.busId;
+      this.getOrderInfo(busId);
+      this.getDescList(busId)
+      this.record(busId)
+  },
   methods:{
-      showPopup(){
-          this.show = true;
+      getOrderInfo(busId){
+          
+          this.$http.post('/wx/engineer/api/maintenanceRequestInfo',{
+              busId
+          }).then(res => {
+              let {code, msg, equipmentInfo, workOrderApplyInfo} = res.data;
+              if(code == '0'){
+                  this.info = workOrderApplyInfo;
+                  this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              }else{
+                  Toast(msg)
+              }
+          })
       },
-      clsoePopup(){
-          this.show = false;
+      getDescList(workOrderId){
+          this.$http.post('wx/hospital/api/workOrderDescList',{
+              workOrderId,
+              page:1,
+              limit:20,
+              sidx:'',
+              order:''
+          }).then(res =>{
+              let {code, msg, page} = res.data;
+              if(code == '0'){
+                  let {list} = page;
+                  this.descList = list;
+              }
+          })
       },
-      addRemark(){
-          if(!this.popupContent){
-              Toast('请说明您要拒绝的原因!')
-              return;
-          }
-          this.clsoePopup()
-      }
+      record(workOrderId){
+          this.$http.post('/wx/engineer/api/checkMaintenanceList',{
+              workOrderId
+          }).then(res => {
+              console.log(res.data)
+              let {code, msg, mrList} = res.data;
+              if(code == '0'){
+                  this.recordList = mrList;
+              }
+          })
+      },
+      onback(){
+          this.$router.push({
+              path:'/engRepairReceipt',
+              query:{
+                  device:JSON.stringify(this.info),
+                  taskId:this.$route.query.taskId
+              }
+          })
+      },
+      
   }
 }
 </script>
 <style lang="scss" scoped>
 
 
-
+.desc{
+     color: #999;
+    font-size: 28px;
+    line-height: 60px;
+}
 .fs34{
     font-size: 34px;
 }
 .w450{
     width: 450px;
+    text-align: right;
 }
 .fs-26-color-999{
     color: #999;

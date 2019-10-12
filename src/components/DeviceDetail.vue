@@ -1,43 +1,35 @@
 <template>
   <div class="wrapper">
-    <Title :title="title"/>
+    <!-- <Title :title="title"/> -->
     <div class="content">
       <div class="detail">
         <div class="top flex-row">
           <div class="left flex-column">
-            <div class="device-name">眼底照相造影机（成人用）</div>
-            <div class="device-type fs-26-color-999">JN103450-2S</div>
+            <div class="device-name">{{item.name}}</div>
+            <div class="device-type fs-26-color-999">{{item.brandModel}}</div>
           </div>
-          <img class="right"  src="../assets/img/apply_on.png">
+          <img class="right" @click="onRecord" src="../assets/img/apply_on.png">
         </div>
         <div class="bottom">
             <div class="item flex-row">
                 <div class="name">所属科室:</div>
-                <div class="val">眼科</div>
-            </div>
-            <div class="item flex-row">
-                <div class="name">设备类型:</div>
-                <div class="val">医学光学器具、仪器及内窥镜设备</div>
+                <div class="val">{{item.hospitalName}}</div>
             </div>
             <div class="item flex-row">
                 <div class="name">品牌型号:</div>
-                <div class="val">凯迪泰FLEXO普及型无创呼吸机</div>
+                <div class="val">{{item.brandModel}}</div>
             </div>
             <div class="item flex-row">
                 <div class="name">商品编号:</div>
-                <div class="val">械743w98-ASfurs8</div>
+                <div class="val">{{item.commodityNumber}}</div>
             </div>
-            <div class="item flex-row">
-                <div class="name">供应商:</div>
-                <div class="val">海河商贸有限公司</div>
-            </div>
-            <div class="item flex-row">
+            <!-- <div class="item flex-row">
                 <div class="name">购置日期:</div>
-                <div class="val">2015-06-18</div>
-            </div>
+                <div class="val">{{this.$route.query.commodityNumber}}</div>
+            </div> -->
             <div class="item flex-row">
                 <div class="name">保修期限:</div>
-                <div class="val">2016-06-18</div>
+                <div class="val">{{item.warrantyDesc}}</div>
             </div>
         </div>
       </div>
@@ -48,14 +40,20 @@
 <script>
 import Title from "@/components/common/MyTitle";
 export default {
-  name: "deviceDetail",
   components: {
     Title
   },
   data() {
     return {
-      title: "设备详情"
+      title: "设备详情",
+      item:this.$route.query.item
     };
+  },
+  methods:{
+    onRecord(){
+      //有过报修  跳报修详情  无就隐藏按钮
+      //this.$router.push({name:'reportRepairDetail'})
+    }
   }
 };
 </script>

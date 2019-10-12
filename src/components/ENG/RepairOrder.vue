@@ -1,79 +1,122 @@
 <template>
   <div class="wrapper">
-    <my-title :title="title" :back="false" @right="onRight">
+    <!-- <my-title :title="title" :back="false" @right="onRight">
         <title-icon slot="right" class="right" name='apply_off'/>
-    </my-title>
+    </my-title> -->
     <div class="content">
-      <div class="nav flex-row">
+      <!-- <div class="nav flex-row">
         <div class="item" v-for="item in nav" :key="item.id" @click="onNav(item)">
           <span :class=" {active:item.isActive }">{{item.name}}</span>
         </div>
-      </div>
-      <div class="list flex-column">
-        <div class="bottom flex-row" >
+      </div> -->
+      <!-- <div class="list flex-column">
+        <div class="bottom flex-row" v-for="item in list" :key="item.taskId">
           <div class="b-left flex-column">
-            <div class="device-name">物流运输</div>
-            <div class="fs-26-color-999">310987372927</div>
+            <div class="device-name">{{item.taskName}}</div>
+            <div class="fs-26-color-999">{{item.code}}</div>
           </div>
           <div class="b-right flex-row">
             <div class="b-right-left flex-column">
-              <div class="device-name" :class="{state:isActive}">已签收</div>
-              <div class="fs-26-color-999">顺丰快递</div>
+              <div class="device-name co" :class="{state:isActive}">{{item.status | state}}</div>
+              <div class="fs-26-color-999">{{item.createTime | dateFormat}}</div>
             </div>
             <img src="../../assets/img/arrow.png" class="b-right-right">
           </div>
         </div>
-        <div class="bottom flex-row" >
+      </div> -->
+      <van-list
+        class="list flex-column"
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="getOrderList">
+        <div class="bottom flex-row" v-for="item in list" :key="item.taskId" @click="onDetail(item)">
           <div class="b-left flex-column">
-            <div class="device-name">物流运输</div>
-            <div class="fs-26-color-999">310987372927</div>
+            <div class="device-name">{{item.taskName}}</div>
+            <div class="fs-26-color-999">{{item.code}}</div>
           </div>
           <div class="b-right flex-row">
             <div class="b-right-left flex-column">
-              <div class="device-name" :class="{state:isActive}">已签收</div>
-              <div class="fs-26-color-999">顺丰快递</div>
+              <div class="device-name co state" >{{item.orderReceivingStatus | state}}</div>
+              <div class="fs-26-color-999">{{item.createTime | dateFormat}}</div>
             </div>
             <img src="../../assets/img/arrow.png" class="b-right-right">
           </div>
         </div>
-      </div>
+        
+      </van-list>
     </div>
   </div>
 </template>
 
 <script>
-import myTitle from "@/components/common/MyTitle";
-import titleIcon from "@/components/common/TitleIcon";
-import { Toast } from 'vant';
+// import myTitle from "@/components/common/MyTitle";
+// import titleIcon from "@/components/common/TitleIcon";
+import { Toast,List } from 'vant';
+
 export default {
   name: "repairOrder",
   components: {
-    myTitle,titleIcon
+    List
   },
-  props: {},
+  mounted(){
+
+  },
   data() {
     return {
-      title: "维修接单",
-      nav: [
-        { name: "待接单", isActive: true, id: 0 },
-        { name: "我的维修单", isActive: false, id: 1 }
-      ],
-      isActive:true
+      list:[],
+      num:1,
+      loading: false,
+      finished: false,
+
     };
   },
-  methods: {
-    onRight() {
-      Toast(1111)
-    },
-    onNav(item) {
-      this.nav.forEach(e => {
-        item.name == e.name ? e.isActive = true : e.isActive = false;
-        item.name == '待接单' ? this.isActive = true : this.isActive = false;
-      });
+  filters:{
+    state:function(state){
+      switch (state) {
+        case 0:
+          return '维修中';
+        case 1:
+          return '维修成功';
+        case 2:
+          return '维修失败';
+        case 3:
+          return '维修退回';
+      }
     }
   },
-  created() {},
-  mounted() {}
+  methods: {
+    onDetail(item){
+      this.$router.push({
+        path:'/engRepairApplyDetail',
+        query:{
+          busId:item.busId,
+          taskId:item.taskId
+        }
+      })
+    },
+    getOrderList(){
+      this.$http.post('/wx/engineer/api/waitingList',{
+        page:this.num  ,
+        limit:10
+      }).then(res => {
+        let {code, msg, page} = res.data;
+        if(code == '0'){
+            this.num++;
+            let {totalPage, currPage, list} = page;
+            this.list = this.list.concat(list);
+            this.loading = false;
+            if (currPage >= totalPage) {
+              this.finished = true;
+            }
+        }
+      }).catch(err => {
+        this.loading = false;
+        this.finished = true;
+      })
+    }
+  },
+  
 };
 </script>
 <style lang="scss" scoped>
@@ -107,10 +150,14 @@ export default {
   font-size: 26px;
   line-height: 37px;
 }
+
 .device-name {
   color: #000;
   font-size: 34px;
   line-height: 48px;
+}
+.co{
+  color: #999;
 }
 .bottom {
     padding: 24px ;
@@ -119,7 +166,10 @@ export default {
     color: #999;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-top: 24px;
+    &:first-child{
+      margin-top: 0;
+    }
     .b-right {
       align-items: center;
     }

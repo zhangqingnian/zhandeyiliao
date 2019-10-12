@@ -20,18 +20,26 @@ import EngMyRepairOrderDetail from "@/components/ENG/EngMyRepairOrderDetail";
 import EngRepairDetail from "@/components/ENG/EngRepairDetail";
 
 
-
+import Nav from '@/components/Nav'
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/',
+      component: Nav,
+      meta:{
+        title:'测试Nav Page'
+      }
+    },
     //登录
     {
       path: '/login',
       name: 'login',   
       component: Login,
       meta:{
-        requiresAuth: false
+        requiresAuth: false,
+        title:'登录'
       }
     },
     //绑定手机
@@ -40,7 +48,8 @@ export default new Router({
       name: 'bindMobile',
       component: BindMobile,
       meta: {
-        requiresAuth: false
+        requiresAuth: false,
+        title: '绑定手机号码'
       }
     },
     //修改密码
@@ -49,16 +58,28 @@ export default new Router({
       name: 'revisePassword',
       component: RevisePassword,
       meta: {
-        requiresAuth: false
+        requiresAuth: false,
+        title: '修改密码'
       }
     },
-    //首页
+    //首页 设备列表
     {
-      path: '/',
+      path: '/index',
       name: 'index',
       component: Index,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '设备列表'
+      }
+    },
+    //选择设备列表
+    {
+      path: '/deviceList',
+      name: 'deviceList',
+      component: () => import('@/components/DeviceList'),
+      meta: {
+        requiresAuth: true,
+        title: '选择设备'
       }
     },
     //维修申请
@@ -67,7 +88,8 @@ export default new Router({
       name: 'repairApply',
       component: RepairApply,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '维修申请'
       }
     },
     //维修申请详情
@@ -76,7 +98,8 @@ export default new Router({
       name: 'repairApplyDetail',
       component: RepairApplyDetail,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '维修申请详情'
       }
     },
     //维修申请记录
@@ -85,7 +108,8 @@ export default new Router({
       name: 'repairApplyRecord',
       component: RepairApplyRecord,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '维修申请记录'
       }
     },
 
@@ -96,7 +120,8 @@ export default new Router({
       name: 'deviceDetail',
       component: DeviceDetail,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '设备详情'
       }
     },
     //报修详情
@@ -105,7 +130,8 @@ export default new Router({
       name: 'reportRepairDetail',
       component: ReportRepairDetail,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '报修详情'
       }
     },
     //维修详情 已拒绝 已验收 已报价
@@ -114,7 +140,8 @@ export default new Router({
       name: 'repairDetail',
       component: RepairDetail,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '维修详情'
       }
     },
     //物流详情
@@ -123,7 +150,8 @@ export default new Router({
       name: 'logisticsInfo',
       component: LogisticsInfo,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '物流详情'
       }
     },
     //设备验收 评价
@@ -132,18 +160,30 @@ export default new Router({
       name: 'deviceCheck',
       component: DeviceCheck,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '设备验收'
+      }
+    },
+    //快递维修 凭证
+    {
+      path: '/r',
+      name: 'r',
+      component: () => import('@/components/r'), 
+      meta: {
+        requiresAuth: true,
+        title: '维修详情'
       }
     },
 
-    /* ENG */
+    /* ENG  工程师*/
     //维修接单 (我的维修单)
     {
       path: '/repairOrder',
       name: 'repairOrder',
       component: RepairOrder,
       meta: {
-        requiresAuth: true
+        userRole: 2,  //只能工程师访问
+        title: '维修工单'
       }
     },
     //维修申请详情 待接单 拒绝原因  回执
@@ -152,7 +192,8 @@ export default new Router({
       name: 'engRepairApplyDetail',
       component: EngRepairApplyDetail,
       meta: {
-        requiresAuth: true
+        userRole: 2 ,//只能工程师访问
+        title: '维修申请详情'
       }
     },
     //维修申请  回执填写 
@@ -161,7 +202,8 @@ export default new Router({
       name: 'engRepairReceipt',
       component: EngRepairReceipt,
       meta: {
-        requiresAuth: true
+        userRole: 2, //只能工程师访问
+        title: '维修申请'
       }
     },
     //维修申请详情  我的维修单详情 
@@ -170,7 +212,8 @@ export default new Router({
       name: 'engMyRepairOrderDetail',
       component: EngMyRepairOrderDetail,
       meta: {
-        requiresAuth: true
+        userRole: 2 ,//只能工程师访问
+        title: '维修申请详情'
       }
     },
     //维修详情   
@@ -179,60 +222,98 @@ export default new Router({
       name: 'engRepairDetail',
       component: EngRepairDetail,
       meta: {
-        requiresAuth: true
+        userRole: 2 ,//只能工程师访问
+        title: '维修详情'
       }
     },
 
     /* 咨询 */ 
+    //我的咨询
     {
       path: '/myConsult',
       name: 'myConsult',
       component: () => import('@/components/consult/MyConsult'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '我的咨询'
       }
     },
+    //我要咨询
     {
       path: '/consult',
       name: 'consult',
       component: () => import('@/components/consult/consult'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '我要咨询'
       }
     },
+    //咨询详情
     {
       path: '/consultDetail',
       name: 'consultDetail',
       component: () => import('@/components/consult/ConsultDetail'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '咨询详情'
       }
     },
     /* 培训 */
+    //培训课程
     {
       path: '/trainCourse',
       name: 'trainCourse',
       component: () => import('@/components/train/TrainCourse'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '培训课程'
       }
     },
+    //我的培训课程
+    {
+      path: '/myTrainCourse',
+      name: 'myTrainCourse',
+      component: () => import('@/components/train/MyTrainCourse'),
+      meta: {
+        requiresAuth: true,
+        title: '我的培训课程'
+      }
+    },
+    //培训课程详情
     {
       path: '/trainDetail',
       name: 'trainDetail',
       component: () => import('@/components/train/TrainDetail'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '培训课程详情'
       }
     },
+    //培训课程-报名
     {
       path: '/trainSignup',
       name: 'trainSignup',
       component: () => import('@/components/train/TrainSignup'),
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        title: '报名'
       }
     },
     
   ]
 })
+
+
+
+/*
+  培训讲座： /trainCourse 
+  我的培训: /myTrainCourse
+
+  我要咨询: /consult
+  我的咨询： /myConsult
+
+  我是工程师: /repairOrder
+  我要报修: /repairApply
+  维修记录: http://lfsj.mynatapp.cc/wx_index.html#/repairApplyRecord
+  设备列表: /index
+*/ 

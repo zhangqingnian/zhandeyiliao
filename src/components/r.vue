@@ -34,26 +34,17 @@
         </div>
       </div>
 
-      <div class="deliver-info">
-        <div class="samll-title fs-26-color-999">维修信息</div>
-        <div class="fault-info-content flex-column">
-          <div class="item-group flex-row">
-            <div class="name">维修人员:</div>
-            <div class="val fs34">{{info.engineerName}}</div>
-          </div>
-          <div class="item-group flex-row">
-            <div class="name">联系方式:</div>
-            <div class="fs34">{{info.engineerMobile}}</div>
-          </div>
+      <div class="deliver-info" v-if="info.quote == 'true'">
+        <div class="samll-title fs-26-color-999">维修凭证</div>
+        <div class="fault-info-content ">
+            <van-button  :icon="imgUrl+ 'down.png'"  style="border:none;"
+            @click="download(item)"
+             v-for="item in downFileArr" :key="item.fileName">
+                {{item.fileName}}</van-button>
         </div>
       </div>
 
-      <div class="deliver-record" v-if="recordList.length">
-        <div class="samll-title fs-26-color-999">维修记录</div>
-        <ul class="deliver-record-content">
-          <li v-for="(item, index) in recordList" :key="item.id">{{index+1 + '.'}}  {{item.maintenanceRecord}}</li>
-        </ul>
-      </div>
+      
 
       <div class="deliver-rating" v-if="info.evaluation == 'true'">
         <div class="samll-title fs-26-color-999">评分及评论</div>
@@ -64,12 +55,12 @@
             </div>
         </div>
       </div>
-      <!-- 上门维修 不显示 -->
-      <!-- <div>
-        <div class="submit">接受维修</div>
-        <div class="submit refuse">拒绝维修</div>
-      </div> -->
-      <div class="submit" v-if="info.status != '3' "  @click="onCheck">设备验收通过</div>
+      <div v-if="info.quote == 'true' && info.quoteAccept == 0">
+        <div class="submit" @click="onConfrim(1)">接受维修</div>
+        <div class="submit refuse" @click="onConfrim(2)">拒绝维修</div>
+      </div>
+
+      <div class="submit" v-if="info.status != '3' && info.quote == 'true' && info.quoteAccept != 0"   @click="onCheck">设备验收通过</div>
     </div>
   </div>
 </template>
@@ -77,9 +68,10 @@
 <script>
 import Title from "@/components/common/MyTitle";
 import Vue from 'vue';
+import $ from 'jquery';
 import { baseURL } from "@/baseUrl";
-import { Rate, Toast } from 'vant';
-Vue.use(Rate);
+import { Rate, Toast, Button, Icon  } from 'vant';
+Vue.use(Rate).use(Button).use(Icon );
 export default {
   data() {
     return {
@@ -88,26 +80,84 @@ export default {
       info:{},
       descList:[],
       faultImg:[],
-      recordList:[]
     };
+  },
+  computed:{
+      downFileArr(){
+        let fileName =  this.info.certImg.split(','),
+            filePath = this.info.certImgAddr.split(',');
+        let arr = [];
+        for(var i=0; i<fileName.length; i++){
+            arr.push({
+                fileName:fileName[i],
+                path:filePath[i]
+            })
+        } 
+        return arr  
+      }
   },
   mounted() {
       let busId = this.$route.query.id;
       this.getOrderInfo(busId);
       this.getDescList(busId)
-      this.record(busId)
     
   },
   methods: {
-    img(){
-      if(this.info.status == 3){
-      //已签收
-       return require('@/assets/img/state4.png')
-      }else{
-        if(this.info.orderReceivingStatus == 1){
-          //待验收
-          return require('@/assets/img/state2.png')
+    onConfrim(quoteAccept){
+          let {id, defid, instanceId, taskId} = this.info;
+          this.$http.post('wx/hospital/api/confirmMaintenance',{
+              id,
+              quoteAccept,
+              defId:defid,
+              instanceId,
+              taskId,
+              busId:id
+          }).then(res => {
+              let {code, msg} = res.data;
+              Toast(msg)
+              if(code == '0'){
+                  this.getOrderInfo(id);
+              }
+          })
+      },
+    downFile(options){
+        var config = $.extend(true, { method: 'post' }, options);
+        var $iframe = $('<iframe id="down-file-iframe" />');
+        var $form = $('<form target="down-file-iframe" method="' + config.method + '" />');
+        $form.attr('action', config.url);
+        for (var key in config.data) {
+            $form.append('<input type="hidden" name="' + key + '" value="' + config.data[key] + '" />');
         }
+        $iframe.append($form);
+        $(document.body).append($iframe);
+        $form[0].submit();
+        $iframe.remove();
+        
+    }, 
+    download(item){
+        let url = baseURL + 'file/downloadFile';
+        this.downFile({
+            url,
+            data:item
+        })
+    },
+
+
+    img(){
+      if(this.info.status != 3 && this.info.quote == 'true' ){
+        if(this.info.quoteAccept == 0){  //已报价
+            return require('@/assets/img/state1.png')
+        }
+        if(this.info.quoteAccept == 1){  //待验收
+            return require('@/assets/img/state2.png')
+        }
+        if(this.info.quoteAccept == 2){  //已拒绝
+            return require('@/assets/img/state3.png')
+        }
+        
+      }
+      if(this.info.status == 3){
+            return require('@/assets/img/state4.png')
       }
     },
     onCheck(){
@@ -163,17 +213,7 @@ export default {
           }
       })
     },
-    record(workOrderId){
-      this.$http.post('/wx/engineer/api/checkMaintenanceList',{
-          workOrderId
-      }).then(res => {
-          console.log(res.data)
-          let {code, msg, mrList} = res.data;
-          if(code == '0'){
-              this.recordList = mrList;
-          }
-      })
-    },
+    
   },
   
 };
@@ -181,6 +221,7 @@ export default {
 <style  lang="scss" scoped>
 .w450 {
   width: 450px;
+  text-align: right;
 }
 .state-img {
   width: 150px;

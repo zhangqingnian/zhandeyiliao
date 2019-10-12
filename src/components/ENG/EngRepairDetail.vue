@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <Title :title="title"/>
+    <!-- <Title :title="title"/> -->
     <div class="content flex-column">
       <div class="device-info">
         <div class="samll-title fs-26-color-999">维修商</div>

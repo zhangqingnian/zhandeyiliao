@@ -1,14 +1,15 @@
+
 <template>
   <div class="wrapper">
-      <Title :title="title"/>
+      <!-- <Title :title="title"/> -->
       <div class="content flex-column">
         <div class="device-info">
             <div class="samll-title fs-26-color-999">设备信息</div>
             <div class="device-info-content flex-row">
                 <div class="left flex-column">
-                    <div class="device-name">眼底照相造影机（成人用）</div>
-                    <div class="device-type fs-26-color-999">设备型号：JN103450-2S</div>
-                    <div class="device-number fs-26-color-999">设备编号：HUUHSBWGXY-7667</div>
+                    <div class="device-name">{{wordOrder.equipmentName}}</div>
+                    <div class="device-type fs-26-color-999">设备型号：{{wordOrder.brandModel}}</div>
+                    <div class="device-number fs-26-color-999">设备编号：{{wordOrder.commodityNumber}}</div>
                 </div>
             </div>
         </div>
@@ -18,45 +19,38 @@
             <div class="fault-info-content flex-column">
                 <div class="item-group flex-row">
                     <div class="name">故障类型:</div>
-                    <div class="val">软件故障</div>
+                    <div class="val">{{wordOrder.faultTypeStr}}</div>
+                </div>
+                
+                <div class="item-group flex-row">
+                    <div class="name">故障描述:</div>
+                    <div class="val w450">{{wordOrder.faultDescStr}}</div>
                 </div>
                 <div class="item-group flex-row">
                     <div class="name">维修类型:</div>
-                    <div class="val">上门维修</div>
+                    <div class="val">{{wordOrder.maintenanceTypeStr}}</div>
                 </div>
-                <div class="item-group flex-row">
-                    <div class="name">故障描述:</div>
-                    <div class="val w450">设备进水，电子屏幕无法成像，外壳完好无损</div>
-                </div>
-                <div class="item-group flex-row">
-                    <div class="name">保修期情况:</div>
-                    <div class="val">在保修期内</div>
-                </div>
-                
                 <div class="item-group">
                     <div class="name">故障图片:</div>
+                    <!-- wordOrder.faultImg -->
                     <div class="flex-row imgwarp">
-                        <img class="img" src="../assets/img/test.png"/>
-                        <img class="img" />
-                        <img class="img" />
-                        <img class="img" />
-                        <img class="img" />
+                        <img v-for="imgName in faultImg" :key="imgName" :src="imgUrl+imgName" class="img" />
                     </div>
                     
                 </div>
             </div>
         </div>
 
-        <div class="deliver-info">
+        <div class="deliver-info" v-if="wordOrder.maintenanceType == 1">
             <div class="samll-title fs-26-color-999">交付信息</div>
             <div class="fault-info-content flex-column">
                 <div class="item-group flex-row">
                     <div class="name">联系方式:</div>
-                    <div class="val fs34">18888888888</div>
+                    <div class="val fs34">{{wordOrder.link}}</div>
                 </div>
                 <div class="item-group flex-row">
-                    <div class="name">交付日期:</div>
-                    <div class="fs34">2019-08-10</div>
+                    <div class="name">上门日期:</div>
+                    <div class="fs34">{{wordOrder.dateOfDelivery | dateFormat}}</div>
                 </div>
             </div>
         </div>
@@ -64,21 +58,22 @@
         <div class="bg-000">
             <div class="add fs-26-color-999">补充说明</div>
             <div class="fault-info-content flex-column" @click="showPopup">
-                <textarea class="textarea" v-model="popupContent" disabled='true' placeholder="待审批的报修申请可以添加补充说明"></textarea>
+                <div class="desc" v-for="(item,index) in descList" :key="item.id">{{index+1+'.' +' '+ item.orderDesc}}</div>
+                <textarea class="textarea"  disabled='true' placeholder="待审批的报修申请可以添加补充说明"></textarea>
             </div>
             
         </div>
 
-        <div class="submit" >我要再次报修此设备</div>
+        <div class="submit" v-if="wordOrder.status == 3" @click="againApply">我要再次报修此设备</div>
 
         <van-popup v-model="show" position="bottom" 
             :style="{ height: '54%' }">
             <div class="popup-title-warp">
                 <div class="popup-title">补充说明</div>
-                <img class="close" @click="clsoePopup" src="../assets/img/close.png" >
+                <img class="close" @click="show = false" src="../assets/img/close.png" >
             </div>
             <div class="popup-content-warp">
-                <textarea v-model="popupContent" class="popup-content" placeholder="待审批的报修申请可以添加补充说明"></textarea>
+                <textarea v-model="orderDesc" class="popup-content" placeholder="待审批的报修申请可以添加补充说明"></textarea>
             </div>
             <div class="submit" @click="addRemark">确认</div>
         </van-popup>
@@ -90,6 +85,7 @@
 import Vue from 'vue';
 import Title from "@/components/common/MyTitle";
 import { Toast, Popup } from 'vant';
+import { baseURL } from "@/baseUrl";
 Vue.use(Toast);
 Vue.use(Popup);
 
@@ -98,32 +94,95 @@ export default {
   components:{
       Title
   },
-  props:{},
+  mounted(){
+      
+      let id = this.$route.query.id;
+      console.log(id)
+      this.getData(id)
+      this.getDescList(id)
+  },
   data(){
     return {
+        imgUrl:baseURL+'file/display/',
         title:'维修申请详情',
         show: false,
-        popupContent:''
+        orderDesc:'',
+        equipmentInfo:{},
+        wordOrder:{},
+        faultImg:[],
+        descList:[]
     }
   },
   methods:{
       showPopup(){
-          this.show = true;
-      },
-      clsoePopup(){
-          this.show = false;
+          if(this.wordOrder.actResult == '3'){
+              this.show = true;
+          }
+          
       },
       addRemark(){
-          if(!this.popupContent){
+          if(!this.orderDesc){
               Toast('请输入您要的补充说明!')
               return;
           }
-          this.clsoePopup()
+          this.$http.post('wx/hospital/api/workOrderDescSave',{
+              workOrderId:this.wordOrder.id,
+              orderDesc:this.orderDesc
+          }).then(res => {
+              let {code, msg} = res.data;
+              if(code != '0'){
+                  Toast(msg)
+                  return
+              };
+              this.show = false;
+              this.orderDesc = '';
+              this.getDescList(this.wordOrder.id)
+          })
+      },
+      getData(busId){
+          this.$http.post('/wx/engineer/api/maintenanceRequestInfo',{
+              busId
+          }).then(res => {
+              let {code, msg, equipmentInfo, workOrderApplyInfo} = res.data;
+              if(code != '0'){
+                  Toast(msg)
+                  return
+              }
+              this.equipmentInfo = equipmentInfo;
+              this.wordOrder = workOrderApplyInfo;
+              this.faultImg = workOrderApplyInfo.faultImg.split(',');
+          })
+      },
+      getDescList(workOrderId){
+          this.$http.post('wx/hospital/api/workOrderDescList',{
+              workOrderId,
+              page:1,
+              limit:20,
+              sidx:'',
+              order:''
+          }).then(res =>{
+              let {code, msg, page} = res.data;
+              if(code == '0'){
+                  let {list} = page;
+                  this.descList = list;
+              }
+          })
+      },
+      againApply(){
+          this.$router.push({
+              name:'repairApply'
+          })
       }
   }
 }
 </script>
 <style lang="scss" scoped>
+.desc{
+     color: #999;
+    font-size: 28px;
+    line-height: 37px;
+    margin-bottom: 20px;
+}
 .textarea{
     width: 100%;
     height: 80px;
@@ -131,6 +190,7 @@ export default {
     font-size: 28px;
     padding: 20px 0 0 20px;
     background: #f5f5f5;
+    resize: none;
 }
 .add{
     margin: 20px 0 16px 24px;
@@ -144,7 +204,7 @@ export default {
     font-size: 34px;
 }
 .w450{
-    width: 450px;
+    max-width: 450px;
 }
 .fs-26-color-999{
     color: #999;

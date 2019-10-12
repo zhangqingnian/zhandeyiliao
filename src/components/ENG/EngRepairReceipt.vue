@@ -1,106 +1,200 @@
 <template>
   <div class="wrapper">
-    <Title :title="title" />
+    <!-- <Title :title="title" /> -->
     <div class="content flex-column">
         <div class="device-info">
-            <div class="samll-title fs-26-color-999">维修商</div>
+            <div class="samll-title fs-26-color-999">设备信息</div>
             <div class="device-info-content flex-row">
                 <div class="left flex-column">
-                    <div class="device-name">北京佳士康科技有限公司</div>
-                    <div class="device-type fs-26-color-999">联系方式：010-98720138</div>
+                    <div class="device-name">{{device.equipmentName}}</div>
+                    <div class="device-type fs-26-color-999">设备型号：{{device.brandModel}}</div>
+                    <div class="device-number fs-26-color-999">设备编号：{{device.commodityNumber}}</div>
                 </div>
-                <img class="right" @click="onDeviceDetail" src="../../assets/img/state2.png" >
+                <!-- <img class="right"  src="../../assets/img/state2.png" > -->
             </div>
         </div>
 
         <div class="fault-info">
             <div class="samll-title fs-26-color-999">维修信息填写</div>
             <div class="fault-info-content flex-column">
-                <div class="item-group flex-row">
+                <!-- <div class="item-group flex-row">
                     <div class="name">维修人员:</div>
                     <input type="text" placeholder="维修人姓名">
                 </div>
                 <div class="item-group flex-row">
                     <div class="name">联系方式:</div>
-                    <input type="text" placeholder="请输入手机号码">
-                </div>
+                    <input type="text" placeholder="请输入手机号码" maxlength="11">
+                </div> -->
                 <div class="item-group flex-row">
                     <div class="name">故障类型:</div>
-                    <select>
-                        <option value ="volvo">Volvo</option>
-                        <option value ="saab">Saab</option>
-                        <option value="opel">Opel</option>
-                        <option value="audi">Audi</option>
+                    <select v-model="faultType">
+                        <option v-for="item in faultTypeList" :value ="item.value"
+                            :key="item.id">{{item.name}}</option>
                     </select>
                 </div>
                 <div class="item-group flex-row">
                     <div class="name">故障判断:</div>
-                    <select>
-                        <option value ="volvo">Volvo</option>
-                        <option value ="saab">Saab</option>
-                        <option value="opel">Opel</option>
-                        <option value="audi">Audi</option>
-                    </select>
-                </div>
-                <div class="item-group">
-                    <div class="name">故障图片:</div>
-                    <van-uploader 
-                        v-model="fileList"
-                        multiple  />                 
+                    <input type="text" v-model.trim="faultJudge">
                 </div>
                 <div class="item-group flex-row">
-                    <div class="name">维修费用:</div>
-                    <div class="warp">
-                        <input type="text" placeholder="请输入维修费用">
-                        <div class="unit">元</div>
+                    <div class="name">维修记录:</div>
+                    <input type="text" v-model.trim="maintenanceRecord">
+                </div>
+            </div>
+        </div>
+
+        <div class="deliver-info" v-if="recordList.length">
+            <div class="samll-title fs-26-color-999">维修记录</div>
+            <div class="fault-info-content flex-column">
+                <div class="item-group fs-26-color-999 fz28"> 
+                    <div v-for="(item, index) in recordList" :key="item.id">
+                        {{index+1+'.'}}  {{item.maintenanceRecord}}
                     </div>
                     
                 </div>
             </div>
         </div>
-
-        <div class="deliver-info">
-            <div class="samll-title fs-26-color-999">维修记录</div>
-            <div class="fault-info-content flex-column">
-                <div class="item-group fs-26-color-999 fz28"> 
-                    <div>1、电子屏幕拆机维修。 更换电路板，配件型号JN3734-93；更换液晶屏幕，配件型号632832-WE。</div>
-                    <div>2、拆机清洁保养，耗材清机油30克。</div>
-                </div>
-            </div>
-        </div>
         <div>
-            <div class="submit">提交</div>
-            <div class="submit refuse">保存</div>
+            <div class="submit" @click="onEnd">维修完毕</div>
+            <div class="submit refuse" @click="onKeep">保存</div>
         </div>
-        
+        <van-dialog
+            v-model="show"
+            title="提示"
+            message="维修是否成功?"
+            confirm-button-text	= "维修成功"
+            cancel-button-text = "维修失败"
+            close-on-click-overlay
+            @confirm="onsuccess"
+            @cancel="onerr"
+            show-cancel-button />
     </div>
   </div>
 </template>
 
 <script>
-import Title from "@/components/common/MyTitle";
+//import Title from "@/components/common/MyTitle";
 import Vue from 'vue';
-import { Uploader } from 'vant';
+import { Uploader, Dialog, Toast } from 'vant';
 
-Vue.use(Uploader);
+Vue.use(Uploader).use(Dialog);
 export default {
-  name:'engRepairReceipt',  
-  components:{
-    Title
-  },
-  props:{
-    
-  },
   data(){
     return {
-        title:'维修申请',
-        fileList: [], //图片上传
+        show: false, 
+        device:JSON.parse(this.$route.query.device),
+        faultTypeList:[],
+        faultType:'', //故障类型
+        faultJudge:'', //故障判断
+        maintenanceRecord:'', //维修记录
+        recordList:[]
+        
     }
   },
+  mounted(){
+      this.getType();
+      this.record();
+  },
   methods:{
-      onDeviceDetail(){
-        this.$router.push({name:'deviceDetail'})
-        console.log('查看设备详情')
+      onEnd(){
+        this.show = true;
+      },
+      onsuccess(){
+          this.repairEnd(1)
+      },
+      onerr(){
+           this.repairEnd(2)
+      },
+      onKeep(){
+          let {faultType,
+              faultJudge,
+              maintenanceRecord} = this;
+          if(!faultJudge){
+              Toast('请填写故障判断!')
+              return
+          }  
+          if(!maintenanceRecord){
+              Toast('请填写维修记录!')
+              return
+          }  
+          let { instanceId} = this.device;
+          this.$http.post('/wx/engineer/api/maintenanceReturnReceiptSave',{
+              instanceId,
+              faultType,
+              faultJudge,
+              maintenanceRecord,
+
+          }).then(res => {
+              let {code, msg} = res.data;
+              Toast(msg)
+              if(code == '0'){
+                  //this.$router.go(-1)
+                  this.record()
+              }
+          })
+      },
+      record(){
+          this.$http.post('/wx/engineer/api/checkMaintenanceList',{
+              workOrderId:this.device.id
+          }).then(res => {
+              console.log(res.data)
+              let {code, msg, mrList} = res.data;
+              if(code == '0'){
+                  this.recordList = mrList;
+              }
+          })
+      },
+      //维修完毕
+      repairEnd(varValue){
+          
+          let {faultType,
+              faultJudge,
+              maintenanceRecord} = this;
+          if(!faultJudge){
+              Toast('请填写故障判断!')
+              return
+          }  
+          if(!maintenanceRecord){
+              Toast('请填写维修记录!')
+              return
+          }  
+          let {id, instanceId, defid} = this.device;
+          let taskId = this.$route.query.taskId;
+          this.$http.post('/wx/engineer/api/maintenanceReturnReceipt',{
+              busId:id,
+              taskId,
+              instanceId,
+              defId:defid,
+              faultType,
+              faultJudge,
+              maintenanceRecord,
+              varName:'orderReceivingStatus',
+              varValue
+
+          }).then(res => {
+              let {code, msg} = res.data;
+              Toast(msg)
+              if(code == '0'){
+                  this.$router.go(-1)
+              }
+          })
+      },
+      //维修类型
+      getType(){
+          this.$http.post('/sys/code/getNextCodes',{
+              mark:'equipment_failur'
+          }).then(res => {
+              let {code, msg , codeEntities} = res.data;
+              console.log(res.data)
+              if(code != '0'){
+                  Toast(msg)
+                  return
+              }
+              
+            this.faultTypeList = codeEntities;
+            this.faultType = this.faultTypeList[0].value;
+              
+          })
       }
   }
 }

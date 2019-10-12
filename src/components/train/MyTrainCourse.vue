@@ -1,8 +1,6 @@
 <template>
   <div class="wrapper">
-    <!-- <Title title="培训课程" @right="onRight">
-      <title-icon slot="right" class="right" name="apply_off"/>
-    </Title> -->
+    <!-- <Title title="我的培训"></Title> -->
     <div class="content">
       <!-- <div class="item flex-row">
         <div class="left flex-column">
@@ -43,12 +41,14 @@
           <img class="right-r" src="../../assets/img/arrow.png">
         </div>
       </div> -->
+      <!--  @load="onLoad" -->
       <van-list
         class="list"
         v-model="loading"
         :finished="finished"
+        @load="onLoad"
         finished-text="没有更多了"
-        @load="onLoad">
+       >
           <div class="item flex-row" v-for="item in list" :key="item.id" @click="courseDetail(item)">
             <div class="left flex-column">
               <div class="device-name">{{item.courseTitle}}</div>
@@ -69,11 +69,9 @@
 
 <script>
 import Title from "@/components/common/MyTitle";
-import titleIcon from "@/components/common/TitleIcon";
 export default {
   components: {
     Title,
-    titleIcon
   },
   data() {
     return {
@@ -105,11 +103,9 @@ export default {
       })
     },
     onLoad(){
-      this.$http.post('wx/hospital/api/listCourse',{
+      this.$http.post('wx/hospital/api/myCourseList',{
           page:this.num,
           limit:15,
-          sidx:'',
-          order:''
       }).then(res => {
         let {code, msg, page} = res.data;
         if(code == '0'){
@@ -134,7 +130,6 @@ export default {
   box-sizing: border-box;
   margin-top: 40px;
 }
-
 .item:first-child{
   margin-top: 0;
 }

@@ -5,7 +5,8 @@
 import Qs from 'qs';
 import axios from 'axios';
 import router from './router';
-
+import Cookies from 'js-cookie'
+import { baseURL } from "@/baseUrl";
 import {
   Toast
 } from 'vant';
@@ -13,12 +14,13 @@ import {
 
 // 创建axios实例
 var instance = axios.create({
-    baseURL: 'http://192.168.1.53:8081/ermp-web/',
+    
+    baseURL,
 });
 // 设置post请求头
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-instance.defaults.withCredentials = true
-console.log(instance.defaults)
+instance.defaults.withCredentials = true;
+
 // 请求拦截器 request 
 instance.interceptors.request.use(config => {
   // 发起请求前做些什么
@@ -28,9 +30,13 @@ instance.interceptors.request.use(config => {
     forbidClick: true, // 禁止点击
     message: '加载中...'
   })
+  // let token = localStorage.getItem('token') || '9999999999';
+  // if(token){
+  //   config.headers['ACCESS_TOKEN'] = token;
+  // }
+  
   //stringify
-  if (config.method === 'post') {
-      console.log(config)
+  if (config.method === 'post' && config.headers['Content-Type'] != "multipart/form-data") {
       config.data = Qs.stringify(config.data);
   }
   return config
@@ -47,16 +53,32 @@ instance.interceptors.response.use(response => {
   } else {
     return Promise.reject(response)
   }
+  
 }, err => {
   Toast.clear()
   //console.log(err.response)
   if (err.response) {
     const status = err.response.status
     const msg = err.response.data.msg
+    console.log(status)
     switch (status) {
+      case 302:
+        Toast('302')
+        // localStorage.removeItem('code');
+        // Cookies.remove('JSESSIONID');
+        // router.replace({
+        //   path: '/login',
+        //   query: {
+        //     redirect: router.currentRoute.fullPath
+        //   }
+        // })
+        break
       case 401:
-        Toast('401')
-        //logoutClearStorage() 清楚存储
+        Toast(msg)
+        break
+      case 403:
+        localStorage.removeItem('code');
+        Cookies.remove('JSESSIONID');
         router.replace({
           path: '/login',
           query: {
@@ -64,15 +86,21 @@ instance.interceptors.response.use(response => {
           }
         })
         break
-      case 403:
-        Toast('403')
-        break
       case 404:
         Toast('404')
         break
       case 500:
-        Toast('服务器出错500')
+        Toast('500')
+        // localStorage.removeItem('code');
+        // Cookies.remove('JSESSIONID');
+        // router.replace({
+        //   path: '/login',
+        //   query: {
+        //     redirect: router.currentRoute.fullPath
+        //   }
+        // })
         break
+      
       default:
         Toast('发生出错，请重试111')
     }
@@ -82,8 +110,7 @@ instance.interceptors.response.use(response => {
   return Promise.reject(err)
 })
 
-
-
+export default instance;
 
 
 
@@ -192,4 +219,3 @@ instance.interceptors.response.use(response => {
 //     }
 //   });
 
-export default instance;

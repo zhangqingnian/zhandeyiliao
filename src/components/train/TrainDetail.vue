@@ -1,44 +1,39 @@
 <template>
   <div class="wrapper">
-    <Title title="培训详情"/>
+    <!-- <Title title="培训详情"/> -->
     <div class="content flex-column">
       <div class="device-info">
         <div class="samll-title fs-26-color-999">培训信息</div>
         <div class="device-info-content flex-row">
           <div class="left flex-column">
-            <div class="device-name">医疗器械系列：过程确认工程师</div>
-            <div class="device-type fs-26-color-999">主讲人：王安石</div>
-            <div class="device-type fs-26-color-999">时间：2019-09-04  13:00～15:00</div>
-            <div class="device-type fs-26-color-999">地点：复旦大学附属华山医院徐汇分院D座805室</div>
+            <div class="device-name">医疗器械系列：{{item.courseTitle}}</div>
+            <div class="device-type fs-26-color-999">主讲人：{{item.speaker}}</div>
+            <div class="device-type fs-26-color-999">时间：{{item.courseStartTime | dateFormat('YYYY-MM-DD HH:mm')}} ~ {{item.courseEndTime | dateFormat('HH:mm')}}</div>
+            <div class="device-type fs-26-color-999">地点：{{item.courseAddress}}</div>
           </div>
-          <img class="state-img" src="../../assets/img/state1.png">
+          <img class="state-img" :src="getImgUrl()" />
         </div>
       </div>
 
       <div class="fault-info">
         <div class="samll-title fs-26-color-999">课程目标</div>
         <div class="fault-info-content flex-column mubiao">
-            完成该培训时，学员将能够了解过程确认体系基本原理、过程因子识别、过程因子筛选、过程因子优化、过程确认样本量配置方法、过程确认统计原理与数据应用、过程确认分析基础
+            {{item.courseTarget}}
         </div>
       </div>
 
       <div class="deliver-info">
         <div class="samll-title fs-26-color-999">课程大纲</div>
         <div class="fault-info-content flex-column mubiao">
-            1、过程确认的概念与意义 <br>
-            2、过程确认的法规要求<br>
-            3、过程确认的分类以及范围<br>
-            4、确认的方案策划（包括再确认）<br>
-            5、过程确认A.安装确认、B、运行确认<br>
-            6、过程确认的报告和支持性文件<br>
-            7、变更控制和确认状态的维护
+            {{item.courseDesc}}
         </div>
       </div>
 
       
 
-        <div class="submit">立即报名</div>
-        <div class="submit refuse">已报名</div>
+        
+        <div class="submit refuse" v-if="item.signUpStatus">已报名</div>
+        <div class="submit" v-if="!item.signUpStatus && item.courseStatus == 0" @click="onSignUp">立即报名</div>
     </div>
   </div>
 </template>
@@ -46,8 +41,8 @@
 <script>
 import Title from "@/components/common/MyTitle";
 import Vue from 'vue';
-import { Rate } from 'vant';
-Vue.use(Rate);
+import { Toast } from 'vant';
+
 export default {
   components: {
     Title
@@ -56,13 +51,47 @@ export default {
   data() {
     return {
       title: "维修详情",
-      star: 3
+      item: JSON.parse(this.$route.query.item),
+      state:'state1'
     };
   },
-  computed: {},
-  methods: {},
-  created() {},
-  mounted() {}
+  computed: {
+    
+  },
+  methods: {
+    getImgUrl(){
+      //signUpStatus ： 课程报名状态 1-已报名，0-未报名
+      //courseStatus ： 课程状态：0-未开始，1-进行中，2-已结束
+      //courseStatus ： 课程状态：0-可报名，1-进行中，2-已结束
+      let state = 'singup'
+      if(this.item.signUpStatus == 1){
+        state = 'singuped'
+      }else{
+        if(this.item.courseStatus == 0){
+
+        }else if (this.item.courseStatus == 1){
+          state = 'singuping'
+        }else if(this.item.courseStatus == 2){
+          state = 'singupend'
+        }
+      }
+      return require("@/assets/img/"+state+".png");
+    },
+    onSignUp(){
+      this.$http.post('/wx/engineer/api/courseSignUp',{
+        courseId:this.item.id
+      }).then(res => {
+        let {code, msg, info} = res.data;
+        if(code == '0'){
+          this.$router.push({
+            name:'myTrainCourse'
+          })
+        }else{
+          Toast(info)
+        }
+      })
+    }
+  }
 };
 </script>
 <style  lang="scss" scoped>

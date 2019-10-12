@@ -1,11 +1,10 @@
 <template>
   <div class="wrapper">
-    <my-title title="我的咨询" :right="true" :back="false" @right="onRight">
+    <!-- <my-title title="我的咨询" :right="true" :back="false" @right="onRight"> 
       <title-icon slot="right" class="right" name="apply_off"/>
-    </my-title>
+    </my-title>-->
     <div class="content flex-column">
-   
-      <div class="item flex-row">
+      <!-- <div class="item flex-row">
         <div class="left flex-column">
           <div class="device-name">华山医院公开课怎么报名？</div>
           <div class="device-type">2019-08-28  18:09:29</div>
@@ -24,7 +23,25 @@
           <div class="section replying">待回复</div>
           <img class="right-r" src="../../assets/img/arrow.png">
         </div>
-      </div>
+      </div> -->
+
+      <van-list
+        class="list"
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="getRecord">
+          <div class="item flex-row" v-for="item in list" :key="item.id" @click="goDetail(item)">
+            <div class="left flex-column" >
+              <div class="device-name">{{item.content}}</div>
+              <div class="device-type">{{item.createTime | dateFormat('YYYY-MM-DD HH:mm:ss')}}</div>
+            </div>
+            <div class="right flex-row">
+              <div class="section replying">{{item.status == 0 ? '待回复':'已回复'}}</div>
+              <img class="right-r" src="../../assets/img/arrow.png">
+            </div>
+          </div>  
+      </van-list>
     </div>
   </div>
 </template>
@@ -32,24 +49,53 @@
 <script>
 import myTitle from "@/components/common/MyTitle";
 import titleIcon from "@/components/common/TitleIcon";
+import Vue from "vue";
+import { List, Toast} from "vant";
+Vue.use(List);
 export default {
   name: "",
   components: {
     myTitle,
     titleIcon
   },
-  props: {},
   data() {
-    return {};
+    return {
+      list: [],
+      loading: false,
+      finished: false,
+      num:1
+    };
   },
-  computed: {},
+  
   methods: {
-    onRight() {
-      console.log(888);
+    goDetail(item){
+      this.$router.push({
+        path:'/consultDetail',
+        query:{
+          item:item
+        }
+      })
+    },
+    getRecord(){
+      this.$http.post('wx/hospital/api/myConsultList',{
+          page:this.num,
+          limit:15,
+          sidx:'',
+          order:''
+      }).then(res => {
+        let {code, msg, page} = res.data;
+        if(code == '0'){
+            this.num++;
+            let {totalPage, currPage, list} = page;
+            this.list = this.list.concat(list);
+            this.loading = false;
+            if (currPage >= totalPage) {
+              this.finished = true;
+            }
+        }
+      })
     }
   },
-  created() {},
-  mounted() {}
 };
 </script>
 <style scoped>
@@ -58,7 +104,10 @@ export default {
   justify-content: space-between;
   padding: 24px;
   box-sizing: border-box;
-  margin-bottom: 40px;
+  margin-top: 40px;
+}
+.item:first-child{
+  margin-top: 0;
 }
 
 .left {

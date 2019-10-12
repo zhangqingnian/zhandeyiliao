@@ -1,72 +1,64 @@
 <template>
   <div class="wrapper">
-    <Title :title="title"/>
+    <!-- <Title :title="title"/> -->
     <div class="content">
       <div class="detail">
         <div class="top flex-row">
           <div class="left flex-column">
-            <div class="device-name">眼底照相造影机（成人用）</div>
-            <div class="device-type fs-26-color-999">设备型号：JN103450-2S</div>
-            <div class="device-number fs-26-color-999">设备编号：HUUHSBWGXY-7667</div>
+            <div class="device-name">{{workOrder.equipmentName}}</div>
+            <div class="device-type fs-26-color-999">设备型号：{{workOrder.brandModel}}</div>
+            <div class="device-number fs-26-color-999">设备编号：{{workOrder.commodityNumber}}</div>
           </div>
           <img class="right" src="../assets/img/see_details.png">
         </div>
       </div>
       <van-steps :active="active" active-color="#57AAF0" direction="vertical">
         <van-step>
-          <div class="bottom flex-row" @click="onDetail">
+          <!-- 维修申请 -->
+          <div class="bottom flex-row" @click="goApplyDetail">
             <div class="b-left flex-column">
               <div class="device-name">维修申请</div>
-              <div class="fs-26-color-999">SH3280-210032</div>
+              <div class="fs-26-color-999">{{workOrder.commodityNumber}}</div>
             </div>
             <div class="b-right flex-row">
               <div class="b-right-left flex-column">
-                <div class="device-name examine">待审批</div>
-                <div class="fs-26-color-999">2019-07-12</div>
+                <div class="device-name examine">{{ workOrder.actResult | actResultFilter }}</div>
+                <div class="fs-26-color-999">{{workOrder.createTime | dateFormat}}</div>
               </div>
               <img src="../assets/img/arrow.png" class="b-right-right">
             </div>
           </div>
         </van-step>
         <van-step>
-          <div class="bottom flex-row" @click="onDetail">
+          <!--上门/ 维修成功 -->
+          <div class="bottom flex-row" @click="onSuccess" >
             <div class="b-left flex-column">
-              <div class="device-name">寄送维修</div>
+              <div class="device-name">{{workOrder.maintenanceType == 1 ? '上门维修':'快递维修'}}</div>
               <div class="fs-26-color-999">010-51021234</div>
             </div>
             <div class="b-right flex-row">
               <div class="b-right-left flex-column">
-                <div class="device-name state">已报价</div>
-                <div class="fs-26-color-999">北京佳士康科技有限公司</div>
+                <div class="device-name state" v-if="workOrder.maintenanceType == 1 && workOrder.status == '3' ">维修已完成</div>
+                <div class="device-name state" v-if="workOrder.maintenanceType == 1 && workOrder.status != '3' ">
+                  {{workOrder.orderReceivingStatus | orderReceivingStatusFilter }}</div>
+                <div class="device-name state" v-if="workOrder.maintenanceType == 2">
+                  {{workOrder.applicationCourier | applicationCourierFilter }}</div>
+                
+                <!-- <div class="fs-26-color-999">北京佳士康科技有限公司</div> -->
               </div>
               <img src="../assets/img/arrow.png" class="b-right-right">
             </div>
           </div>
         </van-step>
-        <van-step>
-          <div class="bottom flex-row" @click="onDetail">
+        <van-step v-if="workOrder.maintenanceType == 2 && workOrder.applicationCourier != 0">
+          <div class="bottom flex-row" @click="onExpress">
             <div class="b-left flex-column">
-              <div class="device-name">物流运输</div>
-              <div class="fs-26-color-999">310987372927</div>
+              <div class="device-name">物流信息</div>
+              <!-- <div class="fs-26-color-999">{{workOrder.courierMailno}}</div> -->
             </div>
             <div class="b-right flex-row">
               <div class="b-right-left flex-column">
-                <div class="device-name state">运输中</div>
-                <div class="fs-26-color-999">顺丰快递</div>
-              </div>
-              <img src="../assets/img/arrow.png" class="b-right-right">
-            </div>
-          </div>
-        </van-step>
-        <van-step>
-          <div class="bottom flex-row" @click="onDetail">
-            <div class="b-left flex-column">
-              <div class="device-name">物流运输</div>
-              <div class="fs-26-color-999">310987372927</div>
-            </div>
-            <div class="b-right flex-row">
-              <div class="b-right-left flex-column">
-                <div class="device-name state">已签收</div>
+                <!-- <div class="device-name state">更多</div> -->
                 <div class="fs-26-color-999">顺丰快递</div>
               </div>
               <img src="../assets/img/arrow.png" class="b-right-right">
@@ -79,31 +71,147 @@
 </template>
 
 <script>
-import Title from "@/components/common/MyTitle";
 import Vue from "vue";
 import { Step, Steps } from "vant";
 
 Vue.use(Step).use(Steps);
 export default {
-  name: "repairDetail",
-  components: {
-    Title
+  mounted(){
+    let {maintenanceType, applicationCourier, courierNumber} = this.workOrder;
+    if(maintenanceType == 2 && applicationCourier != 0){
+      this.expressInfo(courierNumber)
+    }
   },
-  props: {},
   data() {
     return {
       title: "报修详情",
-      active: 0
+      active: 0,
+      workOrder:JSON.parse(this.$route.query.workOrder),//this.$route.query.workOrder
+      workOrderExpress:{}
     };
   },
-  computed: {},
-  methods: {
-    onDetail() {
-      this.$router.push({ name: "repairApplyDetail" });
+  filters:{
+    expressStatusFilter(num){
+      switch (num) {
+        case '1':
+          return "已下单"
+        case '2':
+          return "运输中"
+        case '3':
+          return "待签收"
+        case '4':
+          return "已签收"    
+      }
+    },
+    actResultFilter(num){
+      switch (num) {
+        case '1':
+          return "维修成功"
+        case '2':
+          return "维修失败"
+        case '3':
+          return "维修中" 
+      }
+    },
+    //快递维修
+    applicationCourierFilter(num){
+      switch (num) {
+        case 0:
+          return "待处理" 
+        case 1:
+          return "申请成功"
+        case 2:
+          return "申请失败"
+      }
+    },
+    //上门维修
+    orderReceivingStatusFilter(num){
+      switch (num) {
+        case 0:
+          return "待处理" 
+        case 1:
+          return "维修成功(待验收)"
+        case 2:
+          return "维修失败"
+        case 3:
+          return "维修退回"  
+      }
+    },
+    quoteAcceptFilter(num){
+      switch (num) {
+        case 0:
+          return "待处理" 
+        case 1:
+          return "接受"
+        case 2:
+          return "拒绝"
+      }
+    },
+    statusFilter(num){
+      switch (num) {
+        case 1:
+          return "草稿"
+        case 2:
+          return "审批中"
+        case 3:
+          return "结束"  
+      }
     }
   },
-  created() {},
-  mounted() {}
+  methods:{
+    //查看快递信息
+    onExpress(){
+      this.$router.push({
+        path:'/logisticsInfo',
+        query:{
+          id:this.workOrder.id,
+          workOrderExpress:JSON.stringify(this.workOrderExpress)
+        }
+      })
+    },
+    expressInfo(orderNo){
+      this.$http.post('wx/hospital/api/myWorkOrderExpress',{
+        orderNo
+      }).then(res => {
+        let {code, msg, workOrderExpress} = res.data;
+        if(code == '0'){
+          this.workOrderExpress = workOrderExpress;
+        }
+      })
+    },
+    onSuccess(){
+      //上门维修 && 成功
+      if( this.workOrder.maintenanceType == 1 && this.workOrder.orderReceivingStatus == 1 ){
+        this.$router.push({
+          path:'/repairDetail',
+          query:{
+            id:this.workOrder.id,
+          }
+        })
+      }
+
+      //快递维修 && 成功
+      if( this.workOrder.maintenanceType == 2  ){
+        this.$router.push({
+          path:'/r',
+          query:{
+            id:this.workOrder.id,
+          }
+        })
+      }
+      
+
+      
+    },
+    goApplyDetail(){
+      this.$router.push({
+        path:'/RepairApplyDetail',
+        query:{
+          id:this.workOrder.id,
+        }
+      })
+    }
+  }
 };
 </script>
 <style lang='scss' scoped>

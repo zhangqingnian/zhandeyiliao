@@ -16,15 +16,12 @@
         :finished="finished"
         finished-text="没有更多了"
         @load="onLoad">
-        <div class="item flex-row" v-for="item in list" :key="item.id" @click="onDetail(item)">
+        <div class="item flex-row" v-for="item in list" :key="item.id" @click="onBack(item)">
           <div class="left flex-column">
             <div class="device-name">{{item.name}}</div>
             <div class="device-type">{{item.brandModel}}-2S</div>
           </div>
           <div class="right flex-row">
-            <van-button v-if="item.ordered"  type="warning" size="small" class="mr" @click.stop>已报修</van-button>
-            <van-button v-else  plain  type="info" size="small" class="mr" @click.stop="onQuick(item.id)">一键维修</van-button>
-            
             <div class="right-l flex-column">
               <div class="device-state">正常</div>
               <div class="section">{{item.hospitalName}}</div>
@@ -32,11 +29,7 @@
             <img class="right-r" src="../assets/img/arrow.png">
           </div>
         </div>
-        
       </van-list>
-       
-      
-     
     </div>
   </div>
 </template>
@@ -44,14 +37,9 @@
 <script>
 import Vue from "vue";
 import { Button, List, Toast } from "vant";
-import Title from "@/components/common/MyTitle";
-import titleIcon from "@/components/common/TitleIcon";
+import RepairApplyVue from "./RepairApply.vue";
 Vue.use(Button).use(List);
 export default {
-  name: "index",
-  components: {
-    Title,titleIcon
-  },
   data() {
     return {
       list: [],
@@ -61,30 +49,19 @@ export default {
     };
   },
   methods: {
-    onQuick(depId){
-      console.log('一键维修')
-      this.$http.post('wx/hospital/api/saveWorkOrderForOneRepair',{
-        depId
-      }).then(res => {
-        let {code, msg, workOrder} = res.data;
-        Toast(msg)
-      })
-    },
-    onRight() {
-      console.log(888)
-    },
-    onDetail(item){
-      this.$router.push({
-        path:'/deviceDetail',
-        query:{
-          item
-        }
-      })
+    onBack(item){
+      // if(''){
+      //   Toast('此设备已维修')
+      //   return
+      // }
+      this.$store.commit('selectDevice',item);
+      this.$router.go(-1);
     },
     onLoad() {
       
       this.$http.post('/wx/engineer/api/equipmentList',{
         page:this.num  ,
+        ordered:0,
         limit:15
       }).then(res => {
         let {code, msg, page} = res.data;
@@ -104,9 +81,7 @@ export default {
 };
 </script>
 <style scoped >
-.mr{
-  margin-right: 20px ;
-}
+
 .logowarp {
   display: flex;
   align-items: center;

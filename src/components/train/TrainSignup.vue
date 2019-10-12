@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <Title title="报名" />
+    <!-- <Title title="报名" /> -->
     <div class="content flex-column">
         <div class="fault-info">
             <div class="samll-title fs-26-color-999">报名信息填写</div>
@@ -54,7 +54,6 @@
 <script>
 import Title from "@/components/common/MyTitle";
 export default {
-  name:'repairApply',  
   components:{
     Title
   },

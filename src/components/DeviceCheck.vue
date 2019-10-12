@@ -1,13 +1,13 @@
 <template>
   <div class="wrapper">
-    <Title :title="title"/>
+    <!-- <Title :title="title"/> -->
     <div class="content flex-column">
       <div class="rating-warp flex-column">
        <van-rate v-model="star"  color="#FC6E31" void-color="#999999" void-icon="star"/>
        <div class="text">觉得怎么样，打个分吧！</div>
       </div>
-    <textarea class="rating-text" placeholder="说说这次维修的感受"></textarea>
-    <div class="fault-info">
+    <textarea class="rating-text" v-model="scoreDesc" placeholder="说说这次维修的感受"></textarea>
+    <!-- <div class="fault-info">
       <div class="fault-info-content flex-column">
         <div class="item-group flex-row">
           <div class="name">维修单位:</div>
@@ -29,31 +29,47 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="submit">提交评价</div>
+    </div> -->
+    <div class="submit" @click="submitRating">提交评价</div>
     </div>
   </div>
 </template>
 
 <script>
-import Title from "@/components/common/MyTitle";
 import Vue from "vue";
-import { Rate } from "vant";
+import { Rate, Toast } from "vant";
 Vue.use(Rate);
 export default {
-  name: "deliverCheck",
-  components: { Title },
-  props: {},
   data() {
     return {
       title: "设备验收",
-      star:3
+      star:5,
+      scoreDesc:''
     };
   },
-  computed: {},
-  methods: {},
-  created() {},
-  mounted() {}
+  methods: {
+    submitRating(){
+      if(!this.scoreDesc){
+        Toast('请输入评价!')
+        return
+      }
+
+      this.rating()
+    },
+    rating(){
+      this.$http.post('wx/hospital/api/saveWorkOrderForEvaluation',{
+        id:this.$route.query.id,
+        score:this.star,
+        scoreDesc:this.scoreDesc
+      }).then(res => {
+        let {code, msg} = res.data;
+        Toast(msg)
+        if(code == '0'){
+          this.$router.go(-1);
+        }
+      })
+    }
+  },
 };
 </script>
 <style lang="scss" scoped>

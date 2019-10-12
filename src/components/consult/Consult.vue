@@ -1,39 +1,87 @@
 <template>
   <div class="wrapper">
-    <my-title title="我要咨询" :right="true"></my-title>
+    <!-- <my-title title="我要咨询" :right="true"></my-title> -->
     <div class="content flex-column">
         <div class="item">
-            <div class="title">问题概要：</div>
+            <div class="title">单位名称：</div>
             <div class="warp">
-              <input class="input" type="text">
+              <input class="input" type="text" v-model.trim="unitName">
+            </div>        
+        </div>
+        <div class="item">
+            <div class="title">联系人：</div>
+            <div class="warp">
+              <input class="input" type="text" v-model.trim="linkPerson">
+            </div>        
+        </div>
+        <div class="item">
+            <div class="title">联系电话：</div>
+            <div class="warp">
+              <input class="input" type="text" v-model.trim="linkPhone" maxlength="11">
             </div>        
         </div>
         <div class="item">
             <div class="title">问题描述：</div>
             <div class="warp">
-              <textarea class="textarea" placeholder="请尽量清晰描述您要咨询的问题，客服人员将尽快回复您！"></textarea>
+              <textarea class="textarea" 
+              placeholder="请尽量清晰描述您要咨询的问题，客服人员将尽快回复您！" v-model="content"></textarea>
             </div>        
         </div>
-        <div class="loginBtn">提交</div>
+        <div class="loginBtn" @click="submit">提交</div>
     </div>
   </div>
 </template>
 
 <script>
 import myTitle from "@/components/common/MyTitle";
+import { Toast} from "vant";
 export default {
   components: {
     myTitle,
   },
-  props: {},
   data() {
-    return {};
+    return {
+      unitName:'',
+      linkPerson:'',
+      linkPhone:'',
+      content:''
+    };
   },
-  computed: {},
   methods: {
+    submit(){
+      let {unitName, linkPerson, linkPhone, content} = this;
+      if(!unitName){
+        Toast('请输入单位名称!');
+        return
+      }
+      if(!linkPerson){
+        Toast('请输入联系人!');
+        return
+      }
+      if(!(/^1(3|4|5|6|7|8|9)\d{9}$/.test(linkPhone))){
+        Toast('请输入合法的联系方式!');
+        return
+      }
+      if(!content){
+        Toast('请输入问题内容!');
+        return
+      }
+      this.$http.post('/wx/engineer/api/consultSave',{
+        unitName,
+        linkPerson,
+        linkPhone,
+        content
+      }).then(res => {
+        let {code, msg} = res.data;
+        Toast(msg);
+        if(code == '0'){
+          this.$router.push({
+            name:'myConsult'
+          })
+        }
+      })
+    }
   },
-  created() {},
-  mounted() {}
 };
 </script>
 <style lang="scss"  scoped>

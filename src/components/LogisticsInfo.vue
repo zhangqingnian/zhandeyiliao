@@ -1,81 +1,76 @@
 <template>
   <div class="wrapper">
-    <Title :title="title"/>
+    <!-- <Title :title="title"/> -->
     <div class="content">
       <div class="header flex-row">
         <div class="left flex-column">
           <div class="device-name">顺丰快递</div>
-          <div class="device-type fs-26-color-999">快递单号：310987367219</div>
+          <div class="device-type fs-26-color-999">快递单号：{{workOrderExpress.mailno}}</div>
         </div>
-        <img class="right" src="../assets/img/state4.png">
+        <!-- <img class="right" src="../assets/img/state4.png"> -->
       </div>
       <div class="mian">
         <div class="top">
           <div class="address">
             <div class="r">
-              <div class="device-name">上海市第二人民医院设备科</div>
-              <div class="fs-26-color-999">上海市黄浦区多稼路1号</div>
+              <div class="device-name">{{workOrderExpress.jCompany }}</div>
+              <div class="fs-26-color-999">{{workOrderExpress.jProvince + workOrderExpress.jCity + workOrderExpress.jCounty + workOrderExpress.jAddress }}</div>
             </div>
             <img class="address-img" src="../assets/img/address_send.png" alt>
             <div class="address-line"></div>
           </div>
           <div class="address">
             <div class="r">
-              <div class="device-name">北京佳士康科技有限公司</div>
-              <div class="fs-26-color-999">北京市丰台区黄土岗555号京北工业园区3-2</div>
+              <div class="device-name">{{workOrderExpress.dCompany }}</div>
+              <div class="fs-26-color-999">{{workOrderExpress.dProvince + workOrderExpress.dCity + workOrderExpress.dCounty + workOrderExpress.dAddress }}</div>
             </div>
             <img class="address-img" src="../assets/img/address_accept.png" alt>
           </div>
         </div>
       </div>
       <div class="logistics">
-          <van-steps direction="vertical" active-color="#57AAF0" :active="0">
-            <van-step>
-              <h3 class="device-name color-666">已签收 签收人：门卫 业务员：18701927821</h3>
-              <p class="fs-26-color-999">2016-07-12 12:40</p>
+          <van-steps direction="vertical" active-color="#57AAF0" :active="expressInfo.length - 1">
+            <van-step v-for="(item, index) in expressInfo" :key="index">
+              <h3 class="device-name color-666">{{item.context}}</h3>
+              <p class="fs-26-color-999">{{item.time}}</p>
             </van-step>
-            <van-step>
-              <h3 class="device-name color-666">派件中 业务员：18701927821</h3>
-              <p class="fs-26-color-999">2016-07-12 12:40</p>
-            </van-step>
-            <van-step>
-              <h3 class="device-name color-666">快件到达-北京丰台第四营业点</h3>
-              <p class="fs-26-color-999">2016-07-12 12:40</p>
-            </van-step>
-            <van-step>
-              <h3 class="device-name color-666">快件到达-北京丰台集散中心</h3>
-              <p class="fs-26-color-999">2016-07-12 12:40</p>
-            </van-step>
-            <van-step>
-              <h3 class="device-name color-666">快件到达-北京集散地</h3>
-              <p class="fs-26-color-999">2016-07-12 12:40</p>
-            </van-step>
-          </van-steps>
+          </van-steps>  
         </div>
     </div>
   </div>
 </template>
 
 <script>
-import Title from "@/components/common/MyTitle";
+//import Title from "@/components/common/MyTitle";
 import Vue from "vue";
 import { Step, Steps } from "vant";
 Vue.use(Step).use(Steps);
 export default {
-  name: "logisticsInfo",
-  components: {
-    Title
-  },
-  props: {},
   data() {
     return {
-      title: "物流详情"
+      expressInfo:[],
+      workOrderExpress:JSON.parse(this.$route.query.workOrderExpress)
     };
   },
-  computed: {},
-  methods: {},
-  created() {},
-  mounted() {}
+  mounted() {
+    this.getExpressInfo()
+  },
+  methods: {
+    getExpressInfo(){
+      this.$http.post('wx/hospital/api/myWorkOrderExpressStatus',{
+        page:1,
+        limit:20,
+        workOrderId:this.$route.query.id,
+        sidx:'',
+        order:''
+      }).then(res => {
+        let {code, msg, result} = res.data;
+        if(code == '0'){
+          this.expressInfo = result.data;
+        }
+      })
+    }
+  },
 };
 </script>
 <style lang="scss" scoped>

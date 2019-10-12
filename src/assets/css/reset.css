@@ -101,7 +101,7 @@ body {
 
 .content {
   width: 100%;
-  min-height: calc(100vh - 88px);
+  min-height: 100vh;
   background: #f5f5f5;
 }
 
@@ -115,7 +115,6 @@ body {
   color: #fff;
   text-align: center;
   line-height: 90px;
-  margin-top: 200px;
 }
 
 .van-step--finish .van-step__circle,
@@ -134,8 +133,15 @@ body {
   padding-right: 25px;
 }
 
+.van-uploader__upload {
+  width: 210px;
+  height: 210px;
+  margin: 0;
+}
 
-.van-uploader__preview-image {
+
+
+/* .van-uploader__preview-image {
   width: 210px;
   height: 210px;
 }
@@ -156,4 +162,4 @@ body {
 
 .van-uploader__wrapper>div:nth-child(3n) {
   margin-right: 0;
-}
+} */
