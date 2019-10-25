@@ -8,7 +8,7 @@
             <div class="device-name">{{item.name}}</div>
             <div class="device-type fs-26-color-999">{{item.brandModel}}</div>
           </div>
-          <img class="right" @click="onRecord" src="../assets/img/apply_on.png">
+          <!-- <img class="right" src="../assets/img/apply_on.png"> -->
         </div>
         <div class="bottom">
             <div class="item flex-row">
@@ -39,20 +39,33 @@
 
 <script>
 import Title from "@/components/common/MyTitle";
+import { Toast } from 'vant';
 export default {
   components: {
     Title
   },
+  mounted(){
+    let id = this.$route.query.id;
+    this.getDetail(id);
+  },
   data() {
     return {
       title: "设备详情",
-      item:this.$route.query.item
+      item:{}
     };
   },
   methods:{
-    onRecord(){
-      //有过报修  跳报修详情  无就隐藏按钮
-      //this.$router.push({name:'reportRepairDetail'})
+    getDetail(depId){
+      this.$http.post('wx/hospital/api/equipmentOne',{
+        depId
+      }).then(res => {
+         let {code, msg ,equipmentEntity} = res.data;
+         if(code == '0'){
+           this.item = equipmentEntity;
+         }else{
+           Toast(msg)
+         }
+      })
     }
   }
 };

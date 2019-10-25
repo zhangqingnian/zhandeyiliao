@@ -81,7 +81,7 @@ export default {
         case 2:
           return '维修失败';
         case 3:
-          return '维修退回';
+          return '不修';
       }
     }
   },
@@ -91,14 +91,15 @@ export default {
         path:'/engRepairApplyDetail',
         query:{
           busId:item.busId,
-          taskId:item.taskId
+          taskId:item.taskId,
+          taskName:item.taskName
         }
       })
     },
     getOrderList(){
       this.$http.post('/wx/engineer/api/waitingList',{
         page:this.num  ,
-        limit:10
+        limit:15
       }).then(res => {
         let {code, msg, page} = res.data;
         if(code == '0'){

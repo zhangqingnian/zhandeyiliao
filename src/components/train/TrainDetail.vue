@@ -78,16 +78,10 @@ export default {
       return require("@/assets/img/"+state+".png");
     },
     onSignUp(){
-      this.$http.post('/wx/engineer/api/courseSignUp',{
-        courseId:this.item.id
-      }).then(res => {
-        let {code, msg, info} = res.data;
-        if(code == '0'){
-          this.$router.push({
-            name:'myTrainCourse'
-          })
-        }else{
-          Toast(info)
+      this.$router.push({
+        path:'/trainSignup',
+        query:{
+          courseId:this.item.id
         }
       })
     }

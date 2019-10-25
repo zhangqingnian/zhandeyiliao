@@ -57,7 +57,7 @@
                         </div>
                         <van-uploader 
                             :after-read="uploader"
-                            multiple  />
+                              />
                     </div>
                     
                     
@@ -158,7 +158,7 @@ export default {
         this.$router.push({
             path:'/deviceDetail',
             query:{
-                item:this.repairDevice
+                id:this.repairDevice.id
             }
         })
         //console.log('查看设备详情')
@@ -230,10 +230,10 @@ export default {
               return
           }
 
-         if(!this.faultImg.length){
-              Toast('请上传故障图片!')
-              return
-          }
+        //  if(!this.faultImg.length){
+        //       Toast('请上传故障图片!')
+        //       return
+        //   }
           
           if(!(/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.linkMobile))){
                 Toast('请输入合法的联系方式');
@@ -268,11 +268,10 @@ export default {
           //故障类型 ：equipment_failur
           //维修类型 ：maintenance_type
           //故障描述 ：取故障类型返回后的mark值
-          this.$http.post('/sys/code/getNextCodes',{
+          this.$http.post('/wx/engineer/api/getNextCodesForApp',{
               mark
           }).then(res => {
               let {code, msg , codeEntities} = res.data;
-              console.log(res.data)
               if(code != '0'){
                   Toast(msg)
                   return

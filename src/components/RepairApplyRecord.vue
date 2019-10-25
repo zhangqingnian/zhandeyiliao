@@ -30,11 +30,20 @@
               </div>
               <div class="b-right flex-row">
                 <div class="b-right-left flex-column">
-                  <div class="device-name end" v-if="item.status == '3' ">维修已完成</div>
-                  <div class="device-name end" v-else-if="item.maintenanceType == 1">{{ item.orderReceivingStatus | orderReceivingStatusFilter }}</div>
-                  <div class="device-name end" v-else-if="item.maintenanceType == 2 && item.quoteAccept == 1">待验收</div>
-                  <div class="device-name end" v-else-if="item.maintenanceType == 2 && item.quoteAccept == 2">拒绝维修</div>
-                  <div class="device-name end" v-else>维修中</div>
+                  <!-- <div class="device-name end" v-if="item.status == '3' ">维修已完成</div> -->
+                  <div v-if="item.maintenanceType == 1">
+                      <div class="device-name end" v-if="item.status == '3' && item.orderReceivingStatus == 3" >维修结束(不修)</div>
+                      <div class="device-name end" v-else-if="item.status == '3'" >维修已完成</div>
+                      <div class="device-name end" v-else >{{ item.orderReceivingStatus | orderReceivingStatusFilter }}</div>
+                  </div>
+                  <div v-if="item.maintenanceType == 2">
+                     <div class="device-name end" v-if="item.status == '3' && item.quoteAccept == 2" >维修结束(拒绝维修)</div>
+                      <div class="device-name end" v-else-if="item.status == '3'">维修已完成</div>
+                      <div class="device-name end" v-else-if="item.quoteAccept == 1">待验收</div>
+                      <div class="device-name end" v-else-if="item.quoteAccept == 2">拒绝维修</div>
+                      <div class="device-name end" v-else-if="item.applicationCourier == 1">维修中(快递已发)</div>
+                      <div class="device-name end" v-else>维修中</div>
+                  </div>
                   <div class="fs-26-color-999">{{item.startTime | dateFormat}}</div>
                 </div>
                 <img src="../assets/img/arrow.png" class="b-right-right">

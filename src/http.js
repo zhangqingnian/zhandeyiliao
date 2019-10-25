@@ -73,8 +73,6 @@ instance.interceptors.response.use(response => {
         })
         break
       case 403:
-        localStorage.removeItem('code');
-        Cookies.remove('JSESSIONID');
         router.replace({
           path: '/login',
           query: {
@@ -97,7 +95,7 @@ instance.interceptors.response.use(response => {
         // })
         break
       default:
-        Toast('发生出错，请重试111')
+        Toast('发生出错，请重试')
     }
   } else {
     //Toast('发生出错，请重试')

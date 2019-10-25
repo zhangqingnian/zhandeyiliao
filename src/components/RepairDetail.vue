@@ -70,6 +70,7 @@
         <div class="submit refuse">拒绝维修</div>
       </div> -->
       <div class="submit" v-if="info.status != '3' && info.orderReceivingStatus != 2"  @click="onCheck">设备验收通过</div>
+      <div class="submit" v-if="info.evaluation != 'true' && info.status != '3'"  @click="onRating">评价</div>
     </div>
   </div>
 </template>
@@ -99,6 +100,14 @@ export default {
     
   },
   methods: {
+    onRating(){
+      this.$router.push({
+        path:'/deviceCheck',
+        query:{
+          id:this.info.id
+        }
+      })
+    },
     img(){
       if(this.info.status == 3){
       //已签收
@@ -144,7 +153,10 @@ export default {
           if(code == '0'){
               this.info = workOrderApplyInfo;
               this.star = Number(workOrderApplyInfo.score) || 0
-              this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              if(workOrderApplyInfo.faultImg){
+                this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              }
+              
           }else{
               Toast(msg)
           }

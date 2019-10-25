@@ -9,6 +9,7 @@
               <div class="device-name">{{info.equipmentName}}</div>
               <div class="device-type fs-26-color-999">设备型号：{{info.brandModel}}</div>
               <div class="device-number fs-26-color-999">设备编号：{{info.commodityNumber}}</div>
+              <div class="device-number fs-26-color-999">工期：{{info.duration}}</div>
           </div>
           <img class="state-img" :src="img()">
         </div>
@@ -25,7 +26,7 @@
             <div class="name">故障描述:</div>
             <div class="val w450">{{info.faultDescStr}}</div>
           </div>
-          <div class="item-group">
+          <div class="item-group" v-if="faultImg.length">
             <div class="name">故障图片:</div>
             <div class="flex-row imgwarp">
               <img class="img" v-for="imgName in faultImg" :key="imgName" :src="imgUrl+imgName" />
@@ -61,6 +62,7 @@
       </div>
 
       <div class="submit" v-if="info.status != '3' && info.quote == 'true' && info.quoteAccept != 0"   @click="onCheck">设备验收通过</div>
+      <div class="submit" v-if="info.evaluation != 'true' && info.status != '3'"  @click="onRating">评价</div>
     </div>
   </div>
 </template>
@@ -84,6 +86,9 @@ export default {
   },
   computed:{
       downFileArr(){
+        if(!this.info.certImg){
+          return []
+        } 
         let fileName =  this.info.certImg.split(','),
             filePath = this.info.certImgAddr.split(',');
         let arr = [];
@@ -103,6 +108,14 @@ export default {
     
   },
   methods: {
+    onRating(){
+      this.$router.push({
+        path:'/deviceCheck',
+        query:{
+          id:this.info.id
+        }
+      })
+    },
     onConfrim(quoteAccept){
           let {id, defid, instanceId, taskId} = this.info;
           this.$http.post('wx/hospital/api/confirmMaintenance',{
@@ -135,11 +148,15 @@ export default {
         
     }, 
     download(item){
-        let url = baseURL + 'file/downloadFile';
-        this.downFile({
-            url,
-            data:item
-        })
+      this.$router.push({
+        path:'/tip',
+        query:item
+      })
+        // let url = baseURL + 'file/downloadFile';
+        // this.downFile({
+        //     url,
+        //     data:item
+        // })
     },
 
 
@@ -192,7 +209,10 @@ export default {
           if(code == '0'){
               this.info = workOrderApplyInfo;
               this.star = Number(workOrderApplyInfo.score) || 0
-              this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              if(workOrderApplyInfo.faultImg){
+                this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              }
+              
           }else{
               Toast(msg)
           }

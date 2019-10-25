@@ -11,10 +11,12 @@
         </div>
       </div>
       <van-list
+        v-if="list.length"
         class="list"
         v-model="loading"
         :finished="finished"
         finished-text="没有更多了"
+        :immediate-check = 'false'
         @load="onLoad">
         <div class="item flex-row" v-for="item in list" :key="item.id" @click="onDetail(item)">
           <div class="left flex-column">
@@ -34,7 +36,7 @@
         </div>
         
       </van-list>
-       
+      <div v-else>暂无设备,请联系客服</div> 
       
      
     </div>
@@ -43,10 +45,10 @@
 
 <script>
 import Vue from "vue";
-import { Button, List, Toast } from "vant";
+import { Button, List, Toast,Dialog  } from "vant";
 import Title from "@/components/common/MyTitle";
 import titleIcon from "@/components/common/TitleIcon";
-Vue.use(Button).use(List);
+Vue.use(Button).use(List).use(Dialog);
 export default {
   name: "index",
   components: {
@@ -60,15 +62,32 @@ export default {
       num:1
     };
   },
+  mounted(){
+    this.onLoad()
+  },
   methods: {
     onQuick(depId){
-      console.log('一键维修')
-      this.$http.post('wx/hospital/api/saveWorkOrderForOneRepair',{
-        depId
-      }).then(res => {
-        let {code, msg, workOrder} = res.data;
-        Toast(msg)
-      })
+      Dialog.confirm({
+        title: '提示',
+        message: '是否一键报修该设备?'
+      }).then(() => {
+          this.$http.post('wx/hospital/api/saveWorkOrderForOneRepair',{
+            depId
+          }).then(res => {
+            let {code, msg, workOrder} = res.data;
+            Toast(msg)
+            if(code == '0'){
+              this.list = [];
+              this.num = 1;
+              this.loading = false;
+              this.finished = false;
+              this.onLoad()
+            }
+          })
+      }).catch(() => {
+        // on cancel
+      });
+      
     },
     onRight() {
       console.log(888)
@@ -77,7 +96,7 @@ export default {
       this.$router.push({
         path:'/deviceDetail',
         query:{
-          item
+          id:item.id
         }
       })
     },
@@ -95,6 +114,7 @@ export default {
             this.loading = false;
             if (currPage >= totalPage) {
               this.finished = true;
+
             }
         }
       })

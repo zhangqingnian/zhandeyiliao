@@ -15,11 +15,11 @@
       </div>
       
       <div class="input mb80">
-        <input type="text" placeholder="请设置新密码" v-model.trim="password">
+        <input type="password" placeholder="请设置新密码" v-model.trim="password">
         <img class="mobile" src="../assets/img/password.png">
       </div>
       <div class="input">
-        <input type="text" placeholder="请确定新密码" v-model.trim="confirmPassword">
+        <input type="password" placeholder="请确定新密码" v-model.trim="confirmPassword">
         <img class="mobile" src="../assets/img/password.png" >
       </div>
       <div class="loginBtn" @click="confirm">确定</div>
@@ -111,7 +111,8 @@ export default {
     sendCode(){
       this.$http.post('/wx/sendSms',{
         phone:this.phone,
-        channelId:'ali_sms_channel'
+        channelId:'ali_sms_channel',
+        templateCode:'SMS_175200025'
       }).then(res => {
         let {code, msg} = res.data;
         Toast(msg)

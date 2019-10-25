@@ -8,8 +8,9 @@
             <div class="device-name">{{workOrder.equipmentName}}</div>
             <div class="device-type fs-26-color-999">设备型号：{{workOrder.brandModel}}</div>
             <div class="device-number fs-26-color-999">设备编号：{{workOrder.commodityNumber}}</div>
+            <div class="device-number fs-26-color-999">工期：{{workOrder.duration}}</div>
           </div>
-          <img class="right" src="../assets/img/see_details.png">
+          <img class="right" @click="goDetail" src="../assets/img/see_details.png">
         </div>
       </div>
       <van-steps :active="active" active-color="#57AAF0" direction="vertical">
@@ -22,7 +23,19 @@
             </div>
             <div class="b-right flex-row">
               <div class="b-right-left flex-column">
-                <div class="device-name examine">{{ workOrder.actResult | actResultFilter }}</div>
+                <div v-if="workOrder.maintenanceType == 1">
+                      <div class="device-name end" v-if="workOrder.status == '3' && workOrder.orderReceivingStatus == 3" >维修结束(不修)</div>
+                      <div class="device-name end" v-else-if="workOrder.status == '3'" >维修已完成</div>
+                      <div class="device-name end" v-else >{{ workOrder.orderReceivingStatus | orderReceivingStatusFilter }}</div>
+                  </div>
+                  <div v-if="workOrder.maintenanceType == 2">
+                      <div class="device-name end" v-if="workOrder.status == '3' && workOrder.quoteAccept == 2" >维修结束(拒绝维修)</div>
+                      <div class="device-name end" v-else-if="workOrder.status == '3'">维修已完成</div>
+                      <div class="device-name end" v-else-if="workOrder.quoteAccept == 1">待验收</div>
+                      <div class="device-name end" v-else-if="workOrder.quoteAccept == 2">拒绝维修</div>
+                      <div class="device-name end" v-else-if="workOrder.applicationCourier == 1">维修中(快递已发)</div>
+                      <div class="device-name end" v-else>维修中</div>
+                  </div>
                 <div class="fs-26-color-999">{{workOrder.createTime | dateFormat}}</div>
               </div>
               <img src="../assets/img/arrow.png" class="b-right-right">
@@ -159,6 +172,14 @@ export default {
     }
   },
   methods:{
+    goDetail(){
+      this.$router.push({
+        path:'/deviceDetail',
+        query:{
+          id:this.workOrder.depId
+        }
+      })
+    },
     //查看快递信息
     onExpress(){
       this.$router.push({
@@ -197,6 +218,7 @@ export default {
           query:{
             id:this.workOrder.id,
           }
+          
         })
       }
       

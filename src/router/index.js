@@ -32,6 +32,13 @@ export default new Router({
         title:'测试Nav Page'
       }
     },
+    {
+      path: '/tip',
+      component: () => import('@/components/tip'),
+      meta: {
+        title: '浏览文件'
+      }
+    },
     //登录
     {
       path: '/login',

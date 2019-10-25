@@ -9,6 +9,7 @@
                     <div class="device-name">{{info.equipmentName}}</div>
                     <div class="device-type fs-26-color-999">设备型号：{{info.brandModel}}</div>
                     <div class="device-number fs-26-color-999">设备编号：{{info.commodityNumber}}</div>
+                    <div class="device-number fs-26-color-999">工期：{{info.duration}}</div>
                 </div>
             </div>
         </div>
@@ -29,7 +30,7 @@
                     <div class="val w450">{{info.faultDescStr}}</div>
                 </div>
                 
-                <div class="item-group">
+                <div class="item-group" >
                     <div class="name">故障图片:</div>
                     <div class="flex-row imgwarp">
                         <!-- <img class="img" src="../../assets/img/test.png"/> -->
@@ -48,7 +49,7 @@
                     <div class="val fs34">{{info.linkMobile}}</div>
                 </div>
                 <div class="item-group flex-row">
-                    <div class="name">交付日期:</div>
+                    <div class="name">期望上门日期:</div>
                     <div class="fs34">{{info.dateOfDelivery | dateFormat}}</div>
                 </div>
             </div>
@@ -68,8 +69,7 @@
             </div>
         </div>
         <!--orderReceivingStatus '工程师维修结果 0：待处理，1：维修成功，2：维修失败，3：维修退回', -->
-        <div class="submit" v-if="info.orderReceivingStatus == 0" @click="onback">维修回执</div>
-
+        <div class="submit" v-if="taskName != '分配工单' && info.orderReceivingStatus == 0"  @click="onback">维修回执</div>
       </div>
   </div>
 </template>
@@ -91,7 +91,8 @@ export default {
         info:{},
         faultImg:[],
         descList:[],
-        recordList:[]
+        recordList:[],
+        taskName:this.$route.query.taskName
     }
   },
   mounted(){
@@ -109,7 +110,10 @@ export default {
               let {code, msg, equipmentInfo, workOrderApplyInfo} = res.data;
               if(code == '0'){
                   this.info = workOrderApplyInfo;
-                  this.faultImg = workOrderApplyInfo.faultImg.split(',');
+                  if(workOrderApplyInfo.faultImg){
+                      this.faultImg =   workOrderApplyInfo.faultImg.split(',');
+                  }
+                  
               }else{
                   Toast(msg)
               }

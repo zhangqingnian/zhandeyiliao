@@ -10,6 +10,7 @@
                     <div class="device-name">{{wordOrder.equipmentName}}</div>
                     <div class="device-type fs-26-color-999">设备型号：{{wordOrder.brandModel}}</div>
                     <div class="device-number fs-26-color-999">设备编号：{{wordOrder.commodityNumber}}</div>
+                    <div class="device-number fs-26-color-999">工期：{{wordOrder.duration}}</div>
                 </div>
             </div>
         </div>
@@ -30,7 +31,7 @@
                     <div class="name">维修类型:</div>
                     <div class="val">{{wordOrder.maintenanceTypeStr}}</div>
                 </div>
-                <div class="item-group">
+                <div class="item-group" v-if="faultImg.length">
                     <div class="name">故障图片:</div>
                     <!-- wordOrder.faultImg -->
                     <div class="flex-row imgwarp">
@@ -150,7 +151,10 @@ export default {
               }
               this.equipmentInfo = equipmentInfo;
               this.wordOrder = workOrderApplyInfo;
-              this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              if(workOrderApplyInfo.faultImg){
+                  this.faultImg = workOrderApplyInfo.faultImg.split(',');
+              } 
+              
           })
       },
       getDescList(workOrderId){
@@ -169,6 +173,7 @@ export default {
           })
       },
       againApply(){
+          this.$store.commit('selectDevice',this.equipmentInfo);
           this.$router.push({
               name:'repairApply'
           })
