@@ -28,7 +28,7 @@
                       <div class="device-name end" v-else-if="workOrder.status == '3'" >维修已完成</div>
                       <div class="device-name end" v-else >{{ workOrder.orderReceivingStatus | orderReceivingStatusFilter }}</div>
                   </div>
-                  <div v-if="workOrder.maintenanceType == 2">
+                  <div v-else-if="workOrder.maintenanceType == 2">
                       <div class="device-name end" v-if="workOrder.status == '3' && workOrder.quoteAccept == 2" >维修结束(拒绝维修)</div>
                       <div class="device-name end" v-else-if="workOrder.status == '3'">维修已完成</div>
                       <div class="device-name end" v-else-if="workOrder.quoteAccept == 1">待验收</div>
@@ -36,16 +36,19 @@
                       <div class="device-name end" v-else-if="workOrder.applicationCourier == 1">维修中(快递已发)</div>
                       <div class="device-name end" v-else>维修中</div>
                   </div>
+                  <div v-else>
+                    <div class="device-name end">维修中</div>
+                  </div>
                 <div class="fs-26-color-999">{{workOrder.createTime | dateFormat}}</div>
               </div>
               <img src="../assets/img/arrow.png" class="b-right-right">
             </div>
           </div>
         </van-step>
-        <van-step>
+        <van-step v-if="workOrder.maintenanceType != 3">
           <!--上门/ 维修成功 -->
           <div class="bottom flex-row" @click="onSuccess" >
-            <div class="b-left flex-column">
+            <div class="b-left flex-column" >
               <div class="device-name">{{workOrder.maintenanceType == 1 ? '上门维修':'快递维修'}}</div>
               <div class="fs-26-color-999">010-51021234</div>
             </div>

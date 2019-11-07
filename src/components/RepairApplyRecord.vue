@@ -36,7 +36,7 @@
                       <div class="device-name end" v-else-if="item.status == '3'" >维修已完成</div>
                       <div class="device-name end" v-else >{{ item.orderReceivingStatus | orderReceivingStatusFilter }}</div>
                   </div>
-                  <div v-if="item.maintenanceType == 2">
+                  <div v-else-if="item.maintenanceType == 2">
                      <div class="device-name end" v-if="item.status == '3' && item.quoteAccept == 2" >维修结束(拒绝维修)</div>
                       <div class="device-name end" v-else-if="item.status == '3'">维修已完成</div>
                       <div class="device-name end" v-else-if="item.quoteAccept == 1">待验收</div>
@@ -44,7 +44,11 @@
                       <div class="device-name end" v-else-if="item.applicationCourier == 1">维修中(快递已发)</div>
                       <div class="device-name end" v-else>维修中</div>
                   </div>
-                  <div class="fs-26-color-999">{{item.startTime | dateFormat}}</div>
+                  <div v-else>
+                    <div class="device-name end">维修中</div>
+                  </div>
+
+                  <div class="fs-26-color-999" v-if="item.startTime">{{item.startTime | dateFormat}}</div>
                 </div>
                 <img src="../assets/img/arrow.png" class="b-right-right">
               </div>
