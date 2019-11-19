@@ -183,6 +183,37 @@ export default new Router({
     },
 
     /* ENG  工程师*/
+    //医院列表
+    {
+      path: '/hospitalList',
+      name: 'hospitalList',
+      component: () => import('@/components/ENG/HospitalList'), 
+      meta: {
+        userRole: 2,  //只能工程师访问
+        title: '医院列表'
+      }
+    },
+    //设备列表
+    {
+      path: '/engDeviceList',
+      name: 'engDeviceList',
+      component: () => import('@/components/ENG/EngDeviceList'), 
+      meta: {
+        userRole: 2,  //只能工程师访问
+        title: '医院列表'
+      }
+    },
+    //添加回访
+    {
+      path: '/addReturnVisit',
+      name: 'addReturnVisit',
+      component: () => import('@/components/ENG/AddReturnVisit'), 
+      meta: {
+        userRole: 2,  //只能工程师访问
+        title: '添加回访'
+      }
+    },
+
     //维修接单 (我的维修单)
     {
       path: '/repairOrder',

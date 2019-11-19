@@ -1,15 +1,6 @@
 <template>
   <div class="wrapper">
-    <!-- <Title title="首页" :right="true" :back="false" @right="onRight">
-      <title-icon slot="right" class="right" name='apply_off'/>
-    </Title> -->
     <div class="content flex-column">
-      <!-- <div class="search-warp">
-        <div class="search">
-          <input class="search-input" type="text" placeholder="请输入设备编号和名称">
-          <img class="search-img" src="../assets/img/search.png">
-        </div>
-      </div> -->
       <van-list
         class="list"
         v-model="loading"
@@ -19,62 +10,61 @@
         <div class="item flex-row" v-for="item in list" :key="item.id" @click="onBack(item)">
           <div class="left flex-column">
             <div class="device-name">{{item.name}}</div>
-            <div class="device-type">{{item.brandModel}}-2S</div>
           </div>
           <div class="right flex-row">
-            <div class="right-l flex-column">
-              <div class="device-state">正常</div>
-              <div class="section">{{item.hospitalName.slice(0,8)}}</div>
-            </div>
-            <img class="right-r" src="../assets/img/arrow.png">
+            <van-checkbox v-model="item.isNo" checked-color="#07c160"></van-checkbox>
           </div>
         </div>
       </van-list>
+      <div>
+        <van-button type="info">全选</van-button>
+        <van-button type="warning">重置</van-button>
+        <van-button type="danger" @click="onsure">确认</van-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
-import { Button, List, Toast } from "vant";
-import RepairApplyVue from "./RepairApply.vue";
-Vue.use(Button).use(List);
+import { Button, List, Toast ,Checkbox} from "vant";
+Vue.use(Button).use(List).use(Checkbox);
 export default {
   data() {
     return {
-      list: [],
+      list: [{id:1,name:'设备',isNo:false},{id:2,name:'设备',isNo:false},{id:3,name:'设备',isNo:false},
+             {id:4,name:'设备',isNo:false},{id:5,name:'设备',isNo:false},{id:6,name:'设备',isNo:false},
+             {id:7,name:'设备',isNo:false},{id:8,name:'设备',isNo:false},{id:9,name:'设备',isNo:false},   ],
       loading: false,
       finished: false,
       num:1
     };
   },
   methods: {
+    onsure(){
+      console.log(this.list)
+    },
     onBack(item){
-      // if(''){
-      //   Toast('此设备已维修')
-      //   return
-      // }
-      this.$store.commit('selectDevice',item);
-      this.$router.go(-1);
+      
     },
     onLoad() {
       
-      this.$http.post('/wx/engineer/api/equipmentList',{
-        page:this.num  ,
-        ordered:0,
-        limit:15
-      }).then(res => {
-        let {code, msg, page} = res.data;
-        if(code == '0'){
-            this.num++;
-            let {totalPage, currPage, list} = page;
-            this.list = this.list.concat(list);
-            this.loading = false;
-            if (currPage >= totalPage) {
-              this.finished = true;
-            }
-        }
-      })
+    //   this.$http.post('/wx/engineer/api/equipmentList',{
+    //     page:this.num  ,
+    //     ordered:0,
+    //     limit:15
+    //   }).then(res => {
+    //     let {code, msg, page} = res.data;
+    //     if(code == '0'){
+    //         this.num++;
+    //         let {totalPage, currPage, list} = page;
+    //         this.list = this.list.concat(list);
+    //         this.loading = false;
+    //         if (currPage >= totalPage) {
+    //           this.finished = true;
+    //         }
+    //     }
+    //   })
       
     }
   }

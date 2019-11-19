@@ -1,33 +1,25 @@
 <template>
   <div class="wrapper">
-    <!-- <Title title="首页" :right="true" :back="false" @right="onRight">
-      <title-icon slot="right" class="right" name='apply_off'/>
-    </Title> -->
     <div class="content flex-column">
-      <!-- <div class="search-warp">
+      <div class="search-warp">
         <div class="search">
-          <input class="search-input" type="text" placeholder="请输入设备编号和名称">
-          <img class="search-img" src="../assets/img/search.png">
+          <input class="search-input" type="text" placeholder="请输入医院名称" v-model="search">
+          <img class="search-img" src="../../assets/img/search.png" @click="onSearch">
         </div>
-      </div> -->
+      </div>
       <van-list
         class="list"
         v-model="loading"
         :finished="finished"
         finished-text="没有更多了"
         @load="onLoad">
-        <div class="item flex-row" v-for="item in list" :key="item.id" @click="onBack(item)">
+        <div class="item flex-row" v-for="item in list" :key="item.id" @click="onSelect(item)">
           <div class="left flex-column">
             <div class="device-name">{{item.name}}</div>
-            <div class="device-type">{{item.brandModel}}-2S</div>
           </div>
-          <div class="right flex-row">
-            <div class="right-l flex-column">
-              <div class="device-state">正常</div>
-              <div class="section">{{item.hospitalName.slice(0,8)}}</div>
-            </div>
-            <img class="right-r" src="../assets/img/arrow.png">
-          </div>
+          <!-- <div class="right flex-row">
+            <img class="right-r" src="../../assets/img/arrow.png">
+          </div> -->
         </div>
       </van-list>
     </div>
@@ -37,29 +29,30 @@
 <script>
 import Vue from "vue";
 import { Button, List, Toast } from "vant";
-import RepairApplyVue from "./RepairApply.vue";
 Vue.use(Button).use(List);
 export default {
   data() {
     return {
-      list: [],
+      search:'',
+      list: [{id:1,name:'中山医院'},{id:2,name:'华山医院'},{id:3,name:'仁济医院'},
+             {id:4,name:'中山医院'},{id:5,name:'华山医院'},{id:6,name:'仁济医院'},
+             {id:7,name:'中山医院'},{id:8,name:'华山医院'},{id:9,name:'仁济医院'},
+             {id:10,name:'中山医院'},{id:11,name:'华山医院'},{id:12,name:'仁济医院'}],
       loading: false,
       finished: false,
       num:1
     };
   },
   methods: {
-    onBack(item){
-      // if(''){
-      //   Toast('此设备已维修')
-      //   return
-      // }
-      this.$store.commit('selectDevice',item);
-      this.$router.go(-1);
+    //关键字搜索
+    onSearch(){
+      
+    },
+    //选择医院
+    onSelect(item){
     },
     onLoad() {
-      
-      this.$http.post('/wx/engineer/api/equipmentList',{
+      this.$http.post('/wx/hospital/api/organList',{
         page:this.num  ,
         ordered:0,
         limit:15
@@ -102,7 +95,7 @@ export default {
 .content {
   background: #f5f5f5;
   align-items: center;
-  /* padding-top: 92px; */
+  padding-top: 92px;
   box-sizing: border-box;
 }
 .search-warp{
@@ -146,9 +139,9 @@ export default {
 .item {
   background: #fff;
   justify-content: space-between;
-  padding: 24px;
+  padding: 20px 24px;
   box-sizing: border-box;
-  margin-top: 40px;
+  margin-top: 25px;
 }
 .item:first-child { 
   margin-top: 0;
@@ -163,7 +156,7 @@ export default {
 }
 
 .device-name {
-  font-size: 34px;
+  font-size: 32px;
   color: #000;
   line-height: 48px;
 }

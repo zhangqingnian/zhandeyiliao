@@ -23,6 +23,10 @@
         <van-button type="warning" to="/engRepairReceipt">维修申请回执</van-button>
         <van-button type="danger" to="/engMyRepairOrderDetail">我的维修单</van-button>
         <van-button type="info" to="/engRepairDetail">维修详情</van-button>
+        <van-button type="info" to="/hospitalList">医院列表</van-button>
+        <van-button type="info" to="/engDeviceList">设备列表</van-button>
+        <van-button type="danger" to="/addReturnVisit">添加回访</van-button>
+        
       </div>
       <div>
         <h1>咨询</h1>

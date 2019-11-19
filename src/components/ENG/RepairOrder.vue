@@ -1,27 +1,9 @@
 <template>
   <div class="wrapper">
-    <!-- <my-title :title="title" :back="false" @right="onRight">
-        <title-icon slot="right" class="right" name='apply_off'/>
-    </my-title> -->
     <div class="content">
       <!-- <div class="nav flex-row">
         <div class="item" v-for="item in nav" :key="item.id" @click="onNav(item)">
           <span :class=" {active:item.isActive }">{{item.name}}</span>
-        </div>
-      </div> -->
-      <!-- <div class="list flex-column">
-        <div class="bottom flex-row" v-for="item in list" :key="item.taskId">
-          <div class="b-left flex-column">
-            <div class="device-name">{{item.taskName}}</div>
-            <div class="fs-26-color-999">{{item.code}}</div>
-          </div>
-          <div class="b-right flex-row">
-            <div class="b-right-left flex-column">
-              <div class="device-name co" :class="{state:isActive}">{{item.status | state}}</div>
-              <div class="fs-26-color-999">{{item.createTime | dateFormat}}</div>
-            </div>
-            <img src="../../assets/img/arrow.png" class="b-right-right">
-          </div>
         </div>
       </div> -->
       <van-list

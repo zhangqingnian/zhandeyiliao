@@ -4,12 +4,12 @@
       <title-icon slot="right" class="right" name='apply_off'/>
     </Title> -->
     <div class="content flex-column">
-      <div class="search-warp">
+      <!-- <div class="search-warp">
         <div class="search">
           <input class="search-input" type="text" placeholder="请输入设备编号和名称">
           <img class="search-img" src="../assets/img/search.png">
         </div>
-      </div>
+      </div> -->
       <van-list
         v-if="list.length"
         class="list"
@@ -19,17 +19,19 @@
         :immediate-check = 'false'
         @load="onLoad">
         <div class="item flex-row" v-for="item in list" :key="item.id" @click="onDetail(item)">
-          <div class="left flex-column">
-            <div class="device-name">{{item.name}}</div>
-            <div class="device-type">{{item.brandModel}}-2S</div>
+          <div class="left flex-row">
+            <div class="flex-column left-l" >
+              <div class="device-name">{{item.name.slice(0,6)}}</div>
+              <div class="device-type">{{item.brandModel}}</div>
+            </div>
+            <van-button v-if="item.ordered"  type="warning" size="small"  @click.stop>已报修</van-button>
+            <van-button v-else  plain  type="info" size="small"  @click.stop="onQuick(item.id)">一键维修</van-button>
           </div>
           <div class="right flex-row">
-            <van-button v-if="item.ordered"  type="warning" size="small" class="mr" @click.stop>已报修</van-button>
-            <van-button v-else  plain  type="info" size="small" class="mr" @click.stop="onQuick(item.id)">一键维修</van-button>
-            
+
             <div class="right-l flex-column">
               <div class="device-state">正常</div>
-              <div class="section">{{item.hospitalName}}</div>
+              <div class="section">{{item.hospitalName.slice(0,8)}}</div>
             </div>
             <img class="right-r" src="../assets/img/arrow.png">
           </div>
@@ -147,7 +149,7 @@ export default {
 .content {
   background: #f5f5f5;
   align-items: center;
-  padding-top: 92px;
+  /* padding-top: 92px; */
   box-sizing: border-box;
 }
 .search-warp{
@@ -201,6 +203,11 @@ export default {
 
 .left {
   justify-content: space-between;
+ align-items: center;
+}
+.left-l{
+   width: 230px;
+  overflow: hidden;
 }
 
 .right {
@@ -220,6 +227,7 @@ export default {
 
 .device-state {
   color: #57aaf0;
+  text-align: right;
 }
 
 .section {
@@ -231,6 +239,6 @@ export default {
   margin-left: 30px;
 }
 .right-l {
-  font-size: 34px;
+  font-size: 30px;
 }
 </style>
