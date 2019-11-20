@@ -200,7 +200,27 @@ export default new Router({
       component: () => import('@/components/ENG/EngDeviceList'), 
       meta: {
         userRole: 2,  //只能工程师访问
-        title: '医院列表'
+        title: '设备列表'
+      }
+    },
+    //回访记录列表
+    {
+      path: '/visitList',
+      name: 'visitList',
+      component: () => import('@/components/ENG/VisitList'),
+      meta: {
+        userRole: 2, //只能工程师访问
+        title: '回访记录'
+      }
+    },
+    //回访记录列表
+    {
+      path: '/visitDetail',
+      name: 'visitDetail',
+      component: () => import('@/components/ENG/VisitDetail'),
+      meta: {
+        userRole: 2, //只能工程师访问
+        title: '回访详情'
       }
     },
     //添加回访

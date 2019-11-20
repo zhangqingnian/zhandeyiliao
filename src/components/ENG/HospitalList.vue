@@ -1,12 +1,15 @@
 <template>
   <div class="wrapper">
     <div class="content flex-column">
-      <div class="search-warp">
-        <div class="search">
-          <input class="search-input" type="text" placeholder="请输入医院名称" v-model="search">
-          <img class="search-img" src="../../assets/img/search.png" @click="onSearch">
-        </div>
-      </div>
+      <form action="/" class="search-warp">
+        <van-search
+          v-model="search"
+          placeholder="请输入医院名称"
+          show-action
+          @search="onSearch"
+          @cancel="onCancel"
+        />
+      </form>
       <van-list
         class="list"
         v-model="loading"
@@ -28,16 +31,13 @@
 
 <script>
 import Vue from "vue";
-import { Button, List, Toast } from "vant";
-Vue.use(Button).use(List);
+import { Button, List, Toast, Search } from "vant";
+Vue.use(Button).use(List).use(Search);
 export default {
   data() {
     return {
       search:'',
-      list: [{id:1,name:'中山医院'},{id:2,name:'华山医院'},{id:3,name:'仁济医院'},
-             {id:4,name:'中山医院'},{id:5,name:'华山医院'},{id:6,name:'仁济医院'},
-             {id:7,name:'中山医院'},{id:8,name:'华山医院'},{id:9,name:'仁济医院'},
-             {id:10,name:'中山医院'},{id:11,name:'华山医院'},{id:12,name:'仁济医院'}],
+      list: [],
       loading: false,
       finished: false,
       num:1
@@ -46,16 +46,28 @@ export default {
   methods: {
     //关键字搜索
     onSearch(){
+      this.num = 1
+      this.list = []
+      this.loading = true;
+      this.finished = false;
+      if(this.loading){
+        this.onLoad()
+      }
       
+    },
+    onCancel(){
+      this.$emit('closehostpital')
     },
     //选择医院
     onSelect(item){
+      this.$emit('select',item)
     },
     onLoad() {
       this.$http.post('/wx/hospital/api/organList',{
         page:this.num  ,
         ordered:0,
-        limit:15
+        limit:20,
+        name:this.search
       }).then(res => {
         let {code, msg, page} = res.data;
         if(code == '0'){
@@ -95,14 +107,14 @@ export default {
 .content {
   background: #f5f5f5;
   align-items: center;
-  padding-top: 92px;
+  padding-top: 120px;
   box-sizing: border-box;
 }
 .search-warp{
   width: 100%;
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  background-color: #f5f5f5;
+  background-color: #f5f5f5; */
   position: fixed;
   top: 0;
   z-index: 999;

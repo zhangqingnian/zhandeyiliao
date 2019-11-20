@@ -1,77 +1,115 @@
 <template>
-  <div class="wrapper">
-    <div class="content flex-column">
-      <van-list
-        class="list"
-        v-model="loading"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onLoad">
-        <div class="item flex-row" v-for="item in list" :key="item.id" @click="onBack(item)">
-          <div class="left flex-column">
-            <div class="device-name">{{item.name}}</div>
+      <div class="content flex-column">
+        <van-list
+          class="list"
+          v-model="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad">
+          <div class="item flex-row" v-for="item in list" :key="item.id" @click="select(item)">
+            <div class="left flex-column">
+              <div class="device-name">{{item.name}}</div>
+              <div class="device-type">{{item.brandModel}}</div>
+            </div>
+            <div class="right flex-row">
+              <img class="icon" :src="item.isNo ? imgon : imgoff" alt="">
+            </div>
           </div>
-          <div class="right flex-row">
-            <van-checkbox v-model="item.isNo" checked-color="#07c160"></van-checkbox>
-          </div>
+        </van-list>
+        <div class="bottom">
+          <van-button class="btn1" type="info" @click="oncolse">取消</van-button>
+          <van-button class="btn2" type="primary" @click="onsure">确认</van-button>
         </div>
-      </van-list>
-      <div>
-        <van-button type="info">全选</van-button>
-        <van-button type="warning">重置</van-button>
-        <van-button type="danger" @click="onsure">确认</van-button>
       </div>
-    </div>
-  </div>
 </template>
 
 <script>
 import Vue from "vue";
 import { Button, List, Toast ,Checkbox} from "vant";
+let imgon = require('@/assets/img/icon-on.png')
+let imgoff = require('@/assets/img/icon-off.png')
 Vue.use(Button).use(List).use(Checkbox);
 export default {
   data() {
     return {
-      list: [{id:1,name:'设备',isNo:false},{id:2,name:'设备',isNo:false},{id:3,name:'设备',isNo:false},
-             {id:4,name:'设备',isNo:false},{id:5,name:'设备',isNo:false},{id:6,name:'设备',isNo:false},
-             {id:7,name:'设备',isNo:false},{id:8,name:'设备',isNo:false},{id:9,name:'设备',isNo:false},   ],
+      imgon,
+      imgoff,
+      list: [],
       loading: false,
       finished: false,
-      num:1
+      num:1,
+      selectList:[]
     };
   },
   methods: {
-    onsure(){
-      console.log(this.list)
+    oncolse(){
+      this.$emit('colsedevice')
     },
-    onBack(item){
-      
+    onsure(){
+      this.$emit('device',this.selectList)
+    },
+    select(item){
+      item.isNo = !item.isNo
+      if(item.isNo){
+        this.selectList.push({
+          id:item.id,
+          name:item.name
+        })
+      }else {
+        this.selectList = this.selectList.filter(e => {
+            return e.id != item.id
+        })
+      }
     },
     onLoad() {
       
-    //   this.$http.post('/wx/engineer/api/equipmentList',{
-    //     page:this.num  ,
-    //     ordered:0,
-    //     limit:15
-    //   }).then(res => {
-    //     let {code, msg, page} = res.data;
-    //     if(code == '0'){
-    //         this.num++;
-    //         let {totalPage, currPage, list} = page;
-    //         this.list = this.list.concat(list);
-    //         this.loading = false;
-    //         if (currPage >= totalPage) {
-    //           this.finished = true;
-    //         }
-    //     }
-    //   })
+      this.$http.post('/wx/engineer/api/equipmentList',{
+        page:this.num  ,
+        ordered:0,
+        limit:20
+      }).then(res => {
+        let {code, msg, page} = res.data;
+        if(code == '0'){
+            this.num++;
+            let {totalPage, currPage, list} = page;
+            list.forEach(element => {
+              element.isNo = false
+            });
+            this.list = this.list.concat(list);
+            this.loading = false;
+            if (currPage >= totalPage) {
+              this.finished = true;
+            }
+        }
+      })
       
     }
   }
 };
 </script>
 <style scoped >
-
+.icon{
+  width: 40px;
+  height: 40px;
+}
+.bottom{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 999;
+  background: #f5f5f5;
+  box-shadow:0px -1px 0px 0px rgba(229,229,229,1),0px 1px 0px 0px rgba(229,229,229,1);
+  display: flex;
+  height: 80px;
+}
+.bottom .btn1{
+  height: 80px;
+  flex-basis: 30%;
+}
+.bottom .btn2{
+  height: 80px;
+  flex: 1;
+}
 .logowarp {
   display: flex;
   align-items: center;
@@ -90,10 +128,9 @@ export default {
   right: 25px;
 }
 .content {
-  background: #f5f5f5;
   align-items: center;
-  /* padding-top: 92px; */
   box-sizing: border-box;
+  padding-bottom: 80px
 }
 .search-warp{
   width: 100%;
