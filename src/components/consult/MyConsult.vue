@@ -1,29 +1,6 @@
 <template>
   <div class="wrapper">
-    <!-- <my-title title="我的咨询" :right="true" :back="false" @right="onRight"> 
-      <title-icon slot="right" class="right" name="apply_off"/>
-    </my-title>-->
     <div class="content flex-column">
-      <!-- <div class="item flex-row">
-        <div class="left flex-column">
-          <div class="device-name">华山医院公开课怎么报名？</div>
-          <div class="device-type">2019-08-28  18:09:29</div>
-        </div>
-        <div class="right flex-row">
-          <div class="section ">已回复</div>
-          <img class="right-r" src="../../assets/img/arrow.png">
-        </div>
-      </div>
-      <div class="item flex-row">
-        <div class="left flex-column">
-          <div class="device-name">报名费可否退？</div>
-          <div class="device-type">2019-09-02  17:03:56</div>
-        </div>
-        <div class="right flex-row">
-          <div class="section replying">待回复</div>
-          <img class="right-r" src="../../assets/img/arrow.png">
-        </div>
-      </div> -->
 
       <van-list
         class="list"

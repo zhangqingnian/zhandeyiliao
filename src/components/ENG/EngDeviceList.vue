@@ -41,6 +41,18 @@ export default {
       selectList:[]
     };
   },
+  props:['organId'],
+  watch:{
+    'organId':function () {
+      this.num = 1;
+      this.list = [];
+      this.loading = true;
+      this.finished =  false;
+      if(this.loading){
+        this.onLoad()
+      }
+    }
+  },
   methods: {
     oncolse(){
       this.$emit('colsedevice')
@@ -63,9 +75,9 @@ export default {
     },
     onLoad() {
       
-      this.$http.post('/wx/engineer/api/equipmentList',{
+      this.$http.post('/wx/hospital/api/listEquipment',{
         page:this.num  ,
-        ordered:0,
+        organId:this.organId,
         limit:20
       }).then(res => {
         let {code, msg, page} = res.data;

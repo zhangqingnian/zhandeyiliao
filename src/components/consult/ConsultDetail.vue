@@ -9,13 +9,13 @@
             </div>        
         </div> -->
         <div class="item">
-            <div class="title">问题描述：</div>
+            <div class="title">问题描述：{{item.createTime | dateFormat('YYYY-MM-DD HH:mm:ss')}}</div>
             <div class="warp">
               <textarea class="textarea" :value="item.content" readonly></textarea>
             </div>        
         </div>
         <div class="item" v-if="item.status == 1">
-            <div class="title">客服回答：</div>
+            <div class="title">客服回答：{{item.replyTime | dateFormat('YYYY-MM-DD HH:mm:ss')}}</div>
             <div class="warp">
               <div class="textarea" v-html="replyContent">
                   <!-- {{item.replyContent}} -->

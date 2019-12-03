@@ -1,8 +1,4 @@
 <template>
-  <div class="wrapper">
-    <!-- <Title title="首页" :right="true" :back="false" @right="onRight">
-      <title-icon slot="right" class="right" name='apply_off'/>
-    </Title> -->
     <div class="content flex-column">
       <!-- <div class="search-warp">
         <div class="search">
@@ -10,6 +6,15 @@
           <img class="search-img" src="../assets/img/search.png">
         </div>
       </div> -->
+      <form action="/" class="search-warp">
+        <van-search
+          v-model="search"
+          placeholder="请输入医院名称"
+          show-action
+          @search="onSearch"
+          @cancel="onCancel"
+        />
+      </form>
       <van-list
         v-if="list.length"
         class="list"
@@ -39,25 +44,19 @@
         
       </van-list>
       <div v-else>暂无设备,请联系客服</div> 
-      
-     
     </div>
-  </div>
 </template>
 
 <script>
 import Vue from "vue";
-import { Button, List, Toast,Dialog  } from "vant";
-import Title from "@/components/common/MyTitle";
-import titleIcon from "@/components/common/TitleIcon";
-Vue.use(Button).use(List).use(Dialog);
+import { Button, List, Toast,Dialog,Search  } from "vant";
+Vue.use(Button).use(List).use(Dialog).use(Search);
 export default {
   name: "index",
-  components: {
-    Title,titleIcon
-  },
   data() {
     return {
+      search:'',
+      isSearch:false,
       list: [],
       loading: false,
       finished: false,
@@ -91,8 +90,30 @@ export default {
       });
       
     },
-    onRight() {
-      console.log(888)
+    //关键字搜索
+    onSearch(){
+      this.isSearch = true;
+      this.num = 1
+      this.list = []
+      this.loading = true;
+      this.finished = false;
+      if(this.loading){
+        this.onLoad()
+      }
+      
+    },
+    onCancel(){
+       if(!this.isSearch){
+        return
+      }
+      this.isSearch = false
+      this.num = 1
+      this.list = []
+      this.loading = true;
+      this.finished = false;
+      if(this.loading){
+        this.onLoad()
+      }
     },
     onDetail(item){
       this.$router.push({
@@ -106,7 +127,8 @@ export default {
       
       this.$http.post('/wx/engineer/api/equipmentList',{
         page:this.num  ,
-        limit:15
+        limit:15,
+        name:this.search
       }).then(res => {
         let {code, msg, page} = res.data;
         if(code == '0'){
@@ -149,10 +171,17 @@ export default {
 .content {
   background: #f5f5f5;
   align-items: center;
-  /* padding-top: 92px; */
+  padding-top: 120px; 
   box-sizing: border-box;
 }
 .search-warp{
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  box-shadow:0px -1px 0px 0px rgba(229,229,229,1),0px 1px 0px 0px rgba(229,229,229,1);
+}
+/* .search-warp{
   width: 100%;
   display: flex;
   justify-content: center;
@@ -183,7 +212,7 @@ export default {
   position: absolute;
   top: 10px;
   left: 15px;
-}
+} */
 
 .list {
   width: 100%;

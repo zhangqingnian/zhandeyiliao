@@ -73,12 +73,12 @@ instance.interceptors.response.use(response => {
         })
         break
       case 403:
-        router.replace({
-          path: '/login',
-          query: {
-            redirect: router.currentRoute.fullPath
-          }
-        })
+        // router.replace({
+        //   path: '/login',
+        //   query: {
+        //     redirect: router.currentRoute.fullPath
+        //   }
+        // })
         break
       case 404:
         Toast('404')

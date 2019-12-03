@@ -14,7 +14,7 @@
         <van-button type="primary" to="/logisticsInfo">物流详情</van-button>
         <van-button type="warning" to="/repairDetail">维修详情</van-button>
         <van-button type="danger" to="/deviceCheck">设备验收</van-button>
-        
+        <van-button type="warning" to="/confrimInstall">确认安装</van-button>
       </div>
       <div>
         <h1>ENG</h1>
@@ -27,7 +27,7 @@
         <van-button type="info" to="/hospitalList">医院列表</van-button>
         <van-button type="info" to="/engDeviceList">设备列表</van-button>
         <van-button type="info" to="/visitList">回访记录</van-button>
-        
+        <van-button type="warning" to="/installList">安装列表</van-button>
         
       </div>
       <div>

@@ -65,7 +65,6 @@ export default {
     onLoad() {
       this.$http.post('/wx/hospital/api/organList',{
         page:this.num  ,
-        ordered:0,
         limit:20,
         name:this.search
       }).then(res => {
