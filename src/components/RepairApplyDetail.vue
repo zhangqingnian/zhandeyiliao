@@ -56,6 +56,13 @@
             </div>
         </div>
 
+        <div class="deliver-info" v-if="huizhi.length">
+            <div class="samll-title fs-26-color-999">维修回执</div>
+            <div class="fault-info-content flex-column">
+               <img v-for="(item,index) in huizhi" :key='index' :src="item" alt="">
+            </div>
+        </div>
+
         <div class="bg-000">
             <div class="add fs-26-color-999">补充说明</div>
             <div class="fault-info-content flex-column" @click="showPopup">
@@ -111,7 +118,8 @@ export default {
         equipmentInfo:{},
         wordOrder:{},
         faultImg:[],
-        descList:[]
+        descList:[],
+        huizhi:[] //回执img
     }
   },
   methods:{
@@ -154,6 +162,9 @@ export default {
               if(workOrderApplyInfo.faultImg){
                   this.faultImg = workOrderApplyInfo.faultImg.split(',');
               } 
+              if(workOrderApplyInfo.certImg){
+                  this.getHuiZhiImg(workOrderApplyInfo.certImg,workOrderApplyInfo.certImgAddr)
+              }
               
           })
       },
@@ -177,6 +188,15 @@ export default {
           this.$router.push({
               name:'repairApply'
           })
+      },
+      getHuiZhiImg(certImg, certImgAddr){
+        let certImgArr = certImg.split(','),
+            certImgAddrArr = certImgAddr.split(','),
+            imgUrl = baseURL+'file/displayMaintenance?'; 
+            certImgArr.forEach((name,i) => {
+                this.huizhi.push(imgUrl+'img='+ name+'&path='+certImgAddrArr[i])
+            });
+        console.log(this.huizhi)        
       }
   }
 }

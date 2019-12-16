@@ -49,14 +49,14 @@ export default {
     }
   },
   created(){
-        var code = getUrlParam("code");
-        var STATE = this.$route.query.redirect
-        if (!code) {
-          var addr ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9a2400c6e3f4ef5b&redirect_uri=http%3A%2F%2Fzhande.xisheninfo.com%2Fwx_index.html%23%2Flogin&response_type=code&scope=snsapi_userinfo&state='+STATE+'#wechat_redirect'
-          //var addr ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9a2400c6e3f4ef5b&redirect_uri=http%3A%2F%2Flfsj.nat300.top%2Fwx_index.html%23%2Flogin&response_type=code&scope=snsapi_userinfo&state='+STATE+'#wechat_redirect'
-          window.location.href = addr;
-        }
-        localStorage.setItem('code',code)
+        // var code = getUrlParam("code");
+        // var STATE = this.$route.query.redirect
+        // if (!code) {
+        //   var addr ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9a2400c6e3f4ef5b&redirect_uri=http%3A%2F%2Fzhande.xisheninfo.com%2Fwx_index.html%23%2Flogin&response_type=code&scope=snsapi_userinfo&state='+STATE+'#wechat_redirect'
+        //   //var addr ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9a2400c6e3f4ef5b&redirect_uri=http%3A%2F%2Flfsj.nat300.top%2Fwx_index.html%23%2Flogin&response_type=code&scope=snsapi_userinfo&state='+STATE+'#wechat_redirect'
+        //   window.location.href = addr;
+        // }
+        // localStorage.setItem('code',code)
   },
   methods:{
     login(){
