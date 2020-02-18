@@ -181,8 +181,63 @@ export default new Router({
         title: '维修详情'
       }
     },
+    //确认安装
+    {
+      path: '/confrimInstall',
+      name: 'confrimInstall',
+       component: () => import('@/components/ConfrimInstall'),
+      meta: {
+        requiresAuth: false,
+        title: '确认安装'
+      }
+    },
+    //确认安装详情
+    {
+      path: '/confrimInstallDetail',
+      name: 'confrimInstallDetail',
+      component: () => import('@/components/ConfrimInstallDetail'),
+      meta: {
+        requiresAuth: false,
+        title: '确认安装详情'
+      }
+    },
+
+
+
+
+
+
+
+
+
+
+
 
     /* ENG  工程师*/
+    //安装列表
+    {
+      path: '/installList',
+      name: 'installList',
+      component: () => import('@/components/ENG/install/InstallList'),
+      meta: {
+        userRole: 2, //只能工程师访问
+        title: '安装列表'
+      }
+    },
+    //安装详情
+    {
+      path: '/installDetail',
+      name: 'installDetail',
+      component: () => import('@/components/ENG/install/InstallDetail'),
+      meta: {
+        userRole: 2, //只能工程师访问
+        title: '安装详情'
+      }
+    },
+
+
+
+
     //医院列表
     {
       path: '/hospitalList',

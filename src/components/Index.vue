@@ -1,8 +1,4 @@
 <template>
-  <div class="wrapper">
-    <!-- <Title title="首页" :right="true" :back="false" @right="onRight">
-      <title-icon slot="right" class="right" name='apply_off'/>
-    </Title> -->
     <div class="content flex-column">
       <!-- <div class="search-warp">
         <div class="search">
@@ -10,6 +6,15 @@
           <img class="search-img" src="../assets/img/search.png">
         </div>
       </div> -->
+      <form action="/" class="search-warp">
+        <van-search
+          v-model="search"
+          placeholder="请输入医院名称"
+          show-action
+          @search="onSearch"
+          @cancel="onCancel"
+        />
+      </form>
       <van-list
         
         class="list"
@@ -53,9 +58,7 @@
           </div>
         </div>
       </van-list>
-      <!-- <div v-if="!list.length">暂无设备,请联系客服</div> -->
     </div>
-  </div>
 </template>
 
 <script>
@@ -75,6 +78,8 @@ export default {
   },
   data() {
     return {
+      search:'',
+      isSearch:false,
       list: [],
       loading: false,
       finished: false,
@@ -167,10 +172,17 @@ export default {
 .content {
   background: #f5f5f5;
   align-items: center;
-  /* padding-top: 92px; */
+  padding-top: 120px; 
   box-sizing: border-box;
 }
 .search-warp {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  box-shadow:0px -1px 0px 0px rgba(229,229,229,1),0px 1px 0px 0px rgba(229,229,229,1);
+}
+/* .search-warp{
   width: 100%;
   display: flex;
   justify-content: center;
@@ -202,7 +214,7 @@ export default {
   position: absolute;
   top: 10px;
   left: 15px;
-}
+} */
 
 .list {
   width: 100%;

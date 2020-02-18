@@ -17,7 +17,7 @@
                   
               </div>
           </div>
-          <div class="item flex-row"  @click="showDevice = true">
+          <div class="item flex-row"  @click="selectDevice">
               <div class="left">所属设备:</div>
               <div class="flex-row right">
                   <img class="right-r" src="../../assets/img/arrow.png">
@@ -35,7 +35,6 @@
             v-model="currentDate"
             title="请选择回访时间"
             type="datetime"
-            confirm-button-text	= '关闭'
             @confirm="showTime = false"
             @cancel='showTime = false'
             :min-date="new Date()"/>
@@ -48,7 +47,10 @@
       </van-popup>
       <van-popup v-model="showDevice" 
       position="bottom">
-          <EngDeviceList  
+          <EngDeviceList
+          :organId="hospitalId"  
+          :testList="testList"
+          
           @device = "onSelectDevice"
           @colsedevice="showDevice = false" />
       </van-popup>
@@ -79,8 +81,16 @@ export default {
       deviceArrName:'',
       deviceArrId:'',
       currentDate: new Date(),
-      visitContent:'' //回访内容
+      visitContent:'', //回访内容
+      testList:[] //
     }
+  },
+  watch:{
+    'hospitalName':function () {
+      this.deviceArrName = '';  
+      this.deviceArrId ='';
+    },
+    
   },
   computed:{
     selectDate(){
@@ -88,6 +98,13 @@ export default {
     },
   },
   methods:{
+    selectDevice(){
+      if(!this.hospitalId){
+        Toast('请先选择医院!')
+        return;
+      }
+      this.showDevice = true
+    },
     submit(){
       let {currentDate, deviceArrId, hospitalId} = this;
       let reTimes = Moment(currentDate).format("YYYY-MM-DD HH:mm:ss")
@@ -118,7 +135,8 @@ export default {
     },
     //选择医院
     onSelectHispital(obj){
-      let {id, name} = obj;
+      console.log(obj)
+      let {id, name,} = obj;
       this.hospitalId = id;
       this.hospitalName = name;
       this.showHospital = false;

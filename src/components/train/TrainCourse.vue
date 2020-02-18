@@ -1,48 +1,6 @@
 <template>
   <div class="wrapper">
-    <!-- <Title title="培训课程" @right="onRight">
-      <title-icon slot="right" class="right" name="apply_off"/>
-    </Title> -->
     <div class="content">
-      <!-- <div class="item flex-row">
-        <div class="left flex-column">
-          <div class="device-name">安全生产基础知识讲座</div>
-          <div class="device-type">2019-09-03  12:30～14:30</div>
-        </div>
-        <div class="right flex-row">
-          <div class="right-l flex-column">
-            <div class="device-state">可报名</div>
-            <div class="section">王安石</div>
-          </div>
-          <img class="right-r" src="../../assets/img/arrow.png">
-        </div>
-      </div>
-      <div class="item flex-row">
-        <div class="left flex-column">
-          <div class="device-name">安全生产基础知识讲座</div>
-          <div class="device-type">2019-09-03  12:30～14:30</div>
-        </div>
-        <div class="right flex-row">
-          <div class="right-l flex-column">
-            <div class="device-state img">可报名</div>
-            <div class="section">王安石</div>
-          </div>
-          <img class="right-r" src="../../assets/img/arrow.png">
-        </div>
-      </div>
-      <div class="item flex-row">
-        <div class="left flex-column">
-          <div class="device-name">安全生产基础知识讲座</div>
-          <div class="device-type">2019-09-03  12:30～14:30</div>
-        </div>
-        <div class="right flex-row">
-          <div class="right-l flex-column">
-            <div class="device-state ed">可报名</div>
-            <div class="section">王安石</div>
-          </div>
-          <img class="right-r" src="../../assets/img/arrow.png">
-        </div>
-      </div> -->
       <van-list
         class="list"
         v-model="loading"

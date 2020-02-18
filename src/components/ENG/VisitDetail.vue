@@ -22,7 +22,7 @@
               </div>
           </div>
           <div class="item" >
-            <textarea class="tex" v-model.trim="visitContent" placeholder="请输入回访内容"></textarea>
+            <textarea class="tex" value='88888' v-model.trim="visitContent" placeholder="请输入回访内容"></textarea>
           </div>
           <div class="loginBtn" @click="submit">确认提交</div>
       </div>
@@ -51,6 +51,7 @@ export default {
   created(){
     let item = JSON.parse(this.$route.query.item);
     this.item = item;
+    this.visitContent = item.visitContent;
     console.log(item)
   },
   methods:{

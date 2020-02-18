@@ -33,7 +33,7 @@
 
         
         <div class="submit refuse" v-if="item.signUpStatus">已报名</div>
-        <div class="submit" v-if="!item.signUpStatus && item.courseStatus == 0" @click="onSignUp">立即报名</div>
+        <div class="submit" v-if="!item.signUpStatus && item.courseStatus == 0 && item.number > 0" @click="onSignUp">立即报名</div>
     </div>
   </div>
 </template>
