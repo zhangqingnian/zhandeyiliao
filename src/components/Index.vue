@@ -11,123 +11,141 @@
         </div>
       </div> -->
       <van-list
-        v-if="list.length"
+        
         class="list"
         v-model="loading"
         :finished="finished"
         finished-text="没有更多了"
-        :immediate-check = 'false'
         @load="onLoad">
-        <div class="item flex-row" v-for="item in list" :key="item.id" @click="onDetail(item)">
+        <div
+          class="item flex-row"
+          v-for="item in list"
+          :key="item.id"
+          @click="onDetail(item)"
+        >
           <div class="left flex-row">
-            <div class="flex-column left-l" >
-              <div class="device-name">{{item.name.slice(0,6)}}</div>
-              <div class="device-type">{{item.brandModel}}</div>
+            <div class="flex-column left-l">
+              <div class="device-name">{{ item.name.slice(0, 6) }}</div>
+              <div class="device-type">{{ item.brandModel }}</div>
             </div>
-            <van-button v-if="item.ordered"  type="warning" size="small"  @click.stop>已报修</van-button>
-            <van-button v-else  plain  type="info" size="small"  @click.stop="onQuick(item.id)">一键维修</van-button>
+            <van-button
+              v-if="item.ordered"
+              type="warning"
+              size="small"
+              @click.stop
+              >已报修</van-button
+            >
+            <van-button
+              v-else
+              plain
+              type="info"
+              size="small"
+              @click.stop="onQuick(item.id)"
+              >一键维修</van-button
+            >
           </div>
           <div class="right flex-row">
-
             <div class="right-l flex-column">
               <div class="device-state">正常</div>
-              <div class="section">{{item.hospitalName.slice(0,8)}}</div>
+              <div class="section">{{ item.hospitalName.slice(0, 8) }}</div>
             </div>
-            <img class="right-r" src="../assets/img/arrow.png">
+            <img class="right-r" src="../assets/img/arrow.png" />
           </div>
         </div>
-        
       </van-list>
-      <div v-else>暂无设备,请联系客服</div> 
-      
-     
+      <!-- <div v-if="!list.length">暂无设备,请联系客服</div> -->
     </div>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
-import { Button, List, Toast,Dialog  } from "vant";
+import { Button, List, Toast, Dialog } from "vant";
 import Title from "@/components/common/MyTitle";
 import titleIcon from "@/components/common/TitleIcon";
-Vue.use(Button).use(List).use(Dialog);
+Vue.use(Button)
+  .use(List)
+  .use(Dialog);
+
 export default {
   name: "index",
   components: {
-    Title,titleIcon
+    Title,
+    titleIcon
   },
   data() {
     return {
       list: [],
       loading: false,
       finished: false,
-      num:1
+      num: 1
     };
   },
-  mounted(){
-    this.onLoad()
-  },
   methods: {
-    onQuick(depId){
+    onQuick(depId) {
       Dialog.confirm({
-        title: '提示',
-        message: '是否一键报修该设备?'
-      }).then(() => {
-          this.$http.post('wx/hospital/api/saveWorkOrderForOneRepair',{
-            depId
-          }).then(res => {
-            let {code, msg, workOrder} = res.data;
-            Toast(msg)
-            if(code == '0'){
-              this.list = [];
-              this.num = 1;
-              this.loading = false;
-              this.finished = false;
-              this.onLoad()
-            }
-          })
-      }).catch(() => {
-        // on cancel
-      });
-      
+        title: "提示",
+        message: "是否一键报修该设备?"
+      })
+        .then(() => {
+          this.$http
+            .post("wx/hospital/api/saveWorkOrderForOneRepair", {
+              depId
+            })
+            .then(res => {
+              let { code, msg, workOrder } = res.data;
+              Toast(msg);
+              if (code == "0") {
+                this.list = [];
+                this.num = 1;
+                this.loading = false;
+                this.finished = false;
+                this.onLoad();
+              }
+            });
+        })
+        .catch(() => {
+          // on cancel
+        });
     },
     onRight() {
-      console.log(888)
+      console.log(888);
     },
-    onDetail(item){
+    onDetail(item) {
       this.$router.push({
-        path:'/deviceDetail',
-        query:{
-          id:item.id
+        path: "/deviceDetail",
+        query: {
+          id: item.id
         }
-      })
+      });
     },
     onLoad() {
-      
-      this.$http.post('/wx/engineer/api/equipmentList',{
-        page:this.num  ,
-        limit:15
-      }).then(res => {
-        let {code, msg, page} = res.data;
-        if(code == '0'){
+      this.$http
+        .post("/wx/engineer/api/equipmentList", {
+          page: this.num,
+          limit: 15
+        })
+        .then(res => {
+          let { code, msg, page } = res.data;
+          if (code == "0") {
             this.num++;
-            let {totalPage, currPage, list} = page;
+            let { totalPage, currPage, list } = page;
             this.list = this.list.concat(list);
             this.loading = false;
             if (currPage >= totalPage) {
               this.finished = true;
-
             }
-        }
-      })
-      
+          }
+        });
+
+        
     }
   }
 };
 </script>
-<style scoped >
-.mr{
-  margin-right: 20px ;
+<style scoped>
+.mr {
+  margin-right: 20px;
 }
 .logowarp {
   display: flex;
@@ -152,7 +170,7 @@ export default {
   /* padding-top: 92px; */
   box-sizing: border-box;
 }
-.search-warp{
+.search-warp {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -160,7 +178,8 @@ export default {
   position: fixed;
   top: 0;
   z-index: 999;
-  box-shadow:0px -1px 0px 0px rgba(229,229,229,1),0px 1px 0px 0px rgba(229,229,229,1);
+  box-shadow: 0px -1px 0px 0px rgba(229, 229, 229, 1),
+    0px 1px 0px 0px rgba(229, 229, 229, 1);
 }
 .search {
   width: 700px;
@@ -197,16 +216,16 @@ export default {
   box-sizing: border-box;
   margin-top: 40px;
 }
-.item:first-child { 
+.item:first-child {
   margin-top: 0;
 }
 
 .left {
   justify-content: space-between;
- align-items: center;
+  align-items: center;
 }
-.left-l{
-   width: 230px;
+.left-l {
+  width: 230px;
   overflow: hidden;
 }
 

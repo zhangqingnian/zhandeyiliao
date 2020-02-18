@@ -19,7 +19,7 @@
         <div class="item flex-row" v-for="item in list" :key="item.id" @click="onBack(item)">
           <div class="left flex-column">
             <div class="device-name">{{item.name}}</div>
-            <div class="device-type">{{item.brandModel}}-2S</div>
+            <div class="device-type">{{item.brandModel}}</div>
           </div>
           <div class="right flex-row">
             <div class="right-l flex-column">
@@ -61,7 +61,7 @@ export default {
       
       this.$http.post('/wx/engineer/api/equipmentList',{
         page:this.num  ,
-        ordered:0,
+        // ordered:0,
         limit:15
       }).then(res => {
         let {code, msg, page} = res.data;
